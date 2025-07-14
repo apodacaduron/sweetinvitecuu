@@ -34,7 +34,7 @@ export function LoginForm({
       if (error) throw error;
     },
     onSuccess: () => {
-      router.push("/dashboard");
+      router.push("/manage/dashboard");
     },
   });
 

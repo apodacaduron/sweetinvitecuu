@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
   // Redirect logged-in users away from login page (to dashboard)
   if (data.session && req.nextUrl.pathname.startsWith('/login')) {
     const dashboardUrl = req.nextUrl.clone()
-    dashboardUrl.pathname = '/dashboard'
+    dashboardUrl.pathname = '/manage/dashboard'
     return NextResponse.redirect(dashboardUrl)
   }
 
@@ -40,5 +40,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'], // protect these routes + login for redirect
+  matcher: ['/manage/:path*', '/login'], // protect these routes + login for redirect
 }
