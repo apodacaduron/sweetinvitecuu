@@ -1,64 +1,107 @@
-'use client'
+"use client";
 
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
 import { supabase } from '@/lib/supabase';
+import { IconDotsVertical } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-type Client = {
-  id: string
-  name: string | null
-  email: string | null
-  phone: string | null
-  created_at: string
-}
+export type Client = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  created_at: string;
+};
 
-const columnHelper = createColumnHelper<Client>()
+type Props = {
+  onEdit: (client: Client) => void
+  onDelete: (client: Client) => void
+};
 
-const columns = [
-  columnHelper.accessor('name', {
-    header: 'Name',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('email', {
-    header: 'Email',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('phone', {
-    header: 'Phone',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('created_at', {
-    header: 'Created At',
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
-  }),
-]
+const columnHelper = createColumnHelper<Client>();
 
-export default function ClientsTable() {
+export default function ClientsTable(props: Props) {
+  const columns = [
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("email", {
+      header: "Email",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("phone", {
+      header: "Phone",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("created_at", {
+      header: "Created At",
+      cell: (info) =>
+        new Date(info.getValue()).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+    }),
+    columnHelper.display({
+      header: "Actions",
+      cell: ({ row }) => {
+        const client = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+              >
+                <IconDotsVertical />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => props.onEdit(client)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => props.onDelete(client)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    }),
+  ];
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['clients'],
+    queryKey: ["clients"],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clients').select('*')
-      if (error) throw error
-      return data ?? []
+      const { data, error } = await supabase.from("clients").select("*").order('created_at', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
     },
-  })
+  });
 
   const table = useReactTable({
     data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -91,13 +134,19 @@ export default function ClientsTable() {
             ))
           ) : isError ? (
             <TableRow>
-              <TableCell colSpan={3} className="text-center text-sm text-destructive">
+              <TableCell
+                colSpan={3}
+                className="text-center text-sm text-destructive"
+              >
                 Failed to load clients.
               </TableCell>
             </TableRow>
           ) : data && data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={3} className="text-center text-muted-foreground">
+              <TableCell
+                colSpan={3}
+                className="text-center text-muted-foreground"
+              >
                 No clients found.
               </TableCell>
             </TableRow>
@@ -115,5 +164,5 @@ export default function ClientsTable() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
