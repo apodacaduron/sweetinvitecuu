@@ -12,9 +12,9 @@ import {
 
 type Client = {
   id: string
-  name: string
-  email: string
-  phone: string
+  name: string | null
+  email: string | null
+  phone: string | null
   created_at: string
 }
 
@@ -45,7 +45,7 @@ const columns = [
 ]
 
 export default function ClientsTable() {
-  const { data, isLoading, isError } = useQuery<Client[]>({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['clients'],
     queryFn: async () => {
       const { data, error } = await supabase.from('clients').select('*')

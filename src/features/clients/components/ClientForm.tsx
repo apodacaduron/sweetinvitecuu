@@ -9,7 +9,9 @@ import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const clientSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -24,6 +26,8 @@ const clientSchema = z.object({
 type ClientSchema = z.infer<typeof clientSchema>;
 
 export default function ClientForm({ onSuccess }: { onSuccess?: () => void }) {
+  const queryClient = useQueryClient();
+
   const form = useForm<ClientSchema>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
@@ -32,15 +36,28 @@ export default function ClientForm({ onSuccess }: { onSuccess?: () => void }) {
       phone: "",
     },
   });
+  const createMutation = useMutation({
+    mutationFn: async (data: ClientSchema) => {
+      return supabase.from("clients").insert(data).throwOnError();
+    },
+    async onSuccess(_, variables) {
+      await queryClient.invalidateQueries({ queryKey: ['clients'] })
+      toast.success("Client added!", {
+        description: variables.name,
+      });
+      form.reset();
+      onSuccess?.();
+    },
+    onError(error) {
+      toast.error("Failed to add client", {
+        description: error.message,
+      })
+    }
+  });
 
-  const onSubmit = async (data: ClientSchema) => {
-    // Replace with Supabase insert if needed
-    toast.success("Client added!", {
-      description: `${data.name} (${data.email})`,
-    });
-    form.reset();
-    onSuccess?.();
-  };
+  async function onSubmit(data: ClientSchema) {
+    createMutation.mutate(data);
+  }
 
   return (
     <Form {...form}>
