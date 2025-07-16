@@ -1,7 +1,7 @@
 "use client";
 
 import { PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -17,11 +17,9 @@ export default function Page() {
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<Client | null>(null);
 
-  function getListQueryKey() {
-    if (!searchInput) return ["clients"];
-
-    return ["clients", { searchInput }];
-  }
+  const queryKeyGetter = useCallback(() => {
+    return searchInput ? ["clients", { searchInput }] : ["clients"];
+  }, [searchInput]);
 
   function openEditDialog(client: Client) {
     setCurrentItem(client);
@@ -79,7 +77,7 @@ export default function Page() {
                 <ClientDialog
                   onSuccess={() => setFormDialogOpen(false)}
                   client={currentItem}
-                  queryKeyGetter={getListQueryKey}
+                  queryKeyGetter={queryKeyGetter}
                   dialogProps={{
                     open: formDialogOpen,
                     onOpenChange: handleFormDialogChange,
@@ -93,7 +91,7 @@ export default function Page() {
 
               <DeleteClientDialog
                 onSuccess={() => setDeleteDialogOpen(false)}
-                queryKeyGetter={getListQueryKey}
+                queryKeyGetter={queryKeyGetter}
                 itemId={currentItem?.id}
                 itemName={currentItem?.name}
                 dialogProps={{
@@ -106,7 +104,7 @@ export default function Page() {
               <ClientsTable
                 onEdit={openEditDialog}
                 onDelete={openDeleteDialog}
-                queryKeyGetter={getListQueryKey}
+                queryKeyGetter={queryKeyGetter}
               />
             </div>
           </div>

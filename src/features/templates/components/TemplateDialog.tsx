@@ -17,82 +17,76 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogProps } from '@radix-ui/react-dialog';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Client } from './ClientsTable';
+import { Template } from './TemplatesTable';
 
-const clientSchema = z.object({
+const templateSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
-  email: z.email({ message: "Invalid email address" }).or(z.literal("")),
-  phone: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .regex(/^\d+$/, { message: "Phone number must contain only digits" })
-    .or(z.literal("")),
 });
 
-type ClientSchema = z.infer<typeof clientSchema>;
+type TemplateSchema = z.infer<typeof templateSchema>;
 
 type Props = {
   onSuccess?: () => void;
-  item: Client | null;
+  item: Template | null;
   dialogProps: DialogProps;
   queryKeyGetter(): unknown[];
 };
 
-export default function ClientForm(props: Props) {
-  const queryClient = useQueryClient();
+export default function TemplateForm(props: Props) {
+  const queryTemplate = useQueryClient();
 
-  const form = useForm<ClientSchema>({
-    resolver: zodResolver(clientSchema),
+  const form = useForm<TemplateSchema>({
+    resolver: zodResolver(templateSchema),
     defaultValues: {
       name: props.item?.name ?? "",
-      email: props.item?.email ?? "",
-      phone: props.item?.phone ?? "",
     },
   });
   const createMutation = useMutation({
-    mutationFn: async (data: ClientSchema) => {
-      return supabase.from("clients").insert(data).throwOnError();
+    mutationFn: async (data: TemplateSchema) => {
+      return supabase.from("templates").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
-      await queryClient.invalidateQueries({ queryKey: props.queryKeyGetter() });
-      toast.success("Client added!", {
+      await queryTemplate.invalidateQueries({
+        queryKey: props.queryKeyGetter(),
+      });
+      toast.success("Template added!", {
         description: variables.name,
       });
       form.reset();
       props.onSuccess?.();
     },
     onError(error) {
-      toast.error("Failed to add client", {
+      toast.error("Failed to add template", {
         description: error.message,
       });
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: ClientSchema) => {
+    mutationFn: async (data: TemplateSchema) => {
       if (!props.item?.id)
-        throw new Error("Could not update client, id was not provided");
+        throw new Error("Could not update template, id was not provided");
 
       return supabase
-        .from("clients")
+        .from("templates")
         .update(data)
         .eq("id", props.item.id)
         .throwOnError();
     },
     async onSuccess(_, variables) {
-      await queryClient.invalidateQueries({ queryKey: ["clients"] });
-      toast.success("Client updated");
+      await queryTemplate.invalidateQueries({ queryKey: ["templates"] });
+      toast.success("Template updated");
       form.reset();
       props.onSuccess?.();
     },
     onError(error) {
-      toast.error("Failed to update client", {
+      toast.error("Failed to update template", {
         description: error.message,
       });
     },
   });
 
-  async function onSubmit(data: ClientSchema) {
+  async function onSubmit(data: TemplateSchema) {
     const isUpdating = Boolean(props.item?.id);
 
     if (isUpdating) {
@@ -105,8 +99,6 @@ export default function ClientForm(props: Props) {
   useEffect(() => {
     form.reset({
       name: props.item?.name ?? "",
-      email: props.item?.email ?? "",
-      phone: props.item?.phone ?? "",
     });
   }, [props.item, form]);
 
@@ -115,7 +107,7 @@ export default function ClientForm(props: Props) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {props.item?.id ? "Update client" : "Add new client"}
+            {props.item?.id ? "Update template" : "Add new template"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -130,39 +122,7 @@ export default function ClientForm(props: Props) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Client name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="client@example.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input type="tel" placeholder="Client phone" {...field} />
+                    <Input placeholder="Template name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +134,9 @@ export default function ClientForm(props: Props) {
               className="w-full mt-4"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting && <Loader2Icon className="animate-spin" />}
+              {form.formState.isSubmitting && (
+                <Loader2Icon className="animate-spin" />
+              )}
               Save
             </Button>
           </form>

@@ -1,67 +1,113 @@
-'use client'
+"use client";
 
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
 import { supabase } from '@/lib/supabase';
+import { IconDotsVertical } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-type Template = {
-  id: string
-  name: string
-  theme_color: string
-  created_at: string
-}
+export type Template = {
+  id: string;
+  name: string | null;
+  theme_color: string | null;
+  created_at: string;
+};
 
-const columnHelper = createColumnHelper<Template>()
+type Props = {
+  onEdit: (client: Template) => void;
+  onDelete: (client: Template) => void;
+  queryKeyGetter(): unknown[];
+};
 
-const columns = [
-  columnHelper.accessor('name', {
-    header: 'Name',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('theme_color', {
-    header: 'Theme Color',
-    cell: (info) => (
-      <span className="flex items-center gap-2">
-        <span
-          className="inline-block w-4 h-4 rounded-full border"
-          style={{ backgroundColor: info.getValue() }}
-        />
-        {info.getValue()}
-      </span>
-    ),
-  }),
-  columnHelper.accessor('created_at', {
-    header: 'Created At',
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
-  }),
-]
+const columnHelper = createColumnHelper<Template>();
 
-export default function TemplatesTable() {
-  const { data, isLoading, isError } = useQuery<Template[]>({
-    queryKey: ['templates'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('templates').select('*')
-      if (error) throw error
-      return data ?? []
+export default function TemplatesTable(props: Props) {
+  const columns = [
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("theme_color", {
+      header: "Theme Color",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("created_at", {
+      header: "Created At",
+      cell: (info) =>
+        new Date(info.getValue()).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+    }),
+    columnHelper.display({
+      header: "Actions",
+      cell: ({ row }) => {
+        const item = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+              >
+                <IconDotsVertical />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => props.onEdit(item)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => props.onDelete(item)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    }),
+  ];
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: props.queryKeyGetter(),
+    queryFn: async ({ queryKey }) => {
+      const [, params] = queryKey as [string, { searchInput: string }];
+      const query = supabase
+        .from("templates")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .throwOnError();
+
+      if (params?.searchInput) {
+        query.ilike("search", `%${params.searchInput}%`);
+      }
+
+      const { data } = await query;
+      return data ?? [];
     },
-  })
+  });
 
   const table = useReactTable({
     data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -100,7 +146,10 @@ export default function TemplatesTable() {
             </TableRow>
           ) : data && data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={3} className="text-center text-muted-foreground">
+              <TableCell
+                colSpan={3}
+                className="text-center text-muted-foreground"
+              >
                 No templates found.
               </TableCell>
             </TableRow>
@@ -118,5 +167,5 @@ export default function TemplatesTable() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
