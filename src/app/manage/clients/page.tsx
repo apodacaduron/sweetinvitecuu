@@ -11,8 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { ClientForm } from '@/features/clients'; // adjust path as needed
-import { TemplatesTable } from '@/features/templates';
+import { ClientForm, ClientsTable } from '@/features/clients'; // adjust path as needed
 
 export default function Page() {
   const [open, setOpen] = useState(false)
@@ -46,7 +45,7 @@ export default function Page() {
                   </DialogContent>
                 </Dialog>
               </div>
-              <TemplatesTable />
+              <ClientsTable />
             </div>
           </div>
         </div>

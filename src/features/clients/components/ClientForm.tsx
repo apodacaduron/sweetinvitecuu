@@ -93,10 +93,10 @@ export default function ClientForm({ onSuccess }: { onSuccess?: () => void }) {
 
         <Button
           type="submit"
-          className="w-full"
+          className="w-full mt-4"
           disabled={form.formState.isSubmitting}
         >
-          Add Client
+          Save
         </Button>
       </form>
     </Form>

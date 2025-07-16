@@ -14,6 +14,7 @@ type Client = {
   id: string
   name: string
   email: string
+  phone: string
   created_at: string
 }
 
@@ -26,6 +27,10 @@ const columns = [
   }),
   columnHelper.accessor('email', {
     header: 'Email',
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor('phone', {
+    header: 'Phone',
     cell: (info) => info.getValue(),
   }),
   columnHelper.accessor('created_at', {
