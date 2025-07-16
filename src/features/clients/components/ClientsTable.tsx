@@ -24,8 +24,9 @@ export type Client = {
 };
 
 type Props = {
-  onEdit: (client: Client) => void
-  onDelete: (client: Client) => void
+  onEdit: (client: Client) => void;
+  onDelete: (client: Client) => void;
+  queryKeyGetter(): unknown[];
 };
 
 const columnHelper = createColumnHelper<Client>();
@@ -89,10 +90,19 @@ export default function ClientsTable(props: Props) {
   ];
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["clients"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("clients").select("*").order('created_at', { ascending: false });
-      if (error) throw error;
+    queryKey: props.queryKeyGetter(),
+    queryFn: async ({ queryKey }) => {
+      const [, params] = queryKey as [string, { searchInput: string }];
+      const query = supabase
+      .from("clients")
+      .select("*")
+      .order("created_at", { ascending: false }).throwOnError();
+      
+      if (params?.searchInput) {
+        query.ilike("search", `%${params.searchInput}%`);
+      }
+      
+      const { data } = await query;
       return data ?? [];
     },
   });

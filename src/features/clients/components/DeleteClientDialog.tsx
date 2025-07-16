@@ -15,6 +15,7 @@ type Props = {
   itemId: string | null | undefined;
   itemName: string | null | undefined;
   dialogProps: AlertDialogProps;
+  queryKeyGetter(): unknown[];
 };
 
 export default function DeleteClientDialog(props: Props) {
@@ -32,7 +33,7 @@ export default function DeleteClientDialog(props: Props) {
         .throwOnError();
     },
     async onSuccess() {
-      await queryClient.invalidateQueries({ queryKey: ["clients"] });
+      await queryClient.invalidateQueries({ queryKey: props.queryKeyGetter() });
       toast.success("Client deleted");
       props.onSuccess?.();
     },

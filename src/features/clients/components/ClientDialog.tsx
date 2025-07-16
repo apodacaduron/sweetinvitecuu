@@ -35,6 +35,7 @@ type Props = {
   onSuccess?: () => void;
   client: Client | null;
   dialogProps: DialogProps;
+  queryKeyGetter(): unknown[];
 };
 
 export default function ClientForm(props: Props) {
@@ -53,7 +54,7 @@ export default function ClientForm(props: Props) {
       return supabase.from("clients").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
-      await queryClient.invalidateQueries({ queryKey: ["clients"] });
+      await queryClient.invalidateQueries({ queryKey: props.queryKeyGetter() });
       toast.success("Client added!", {
         description: variables.name,
       });
