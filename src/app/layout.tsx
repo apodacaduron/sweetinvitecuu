@@ -2,6 +2,7 @@
 import './globals.css';
 
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 import { Providers } from '@/context/Providers'; // Your client wrapper
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Toaster />
         <Providers>{children}</Providers>
       </body>
     </html>
