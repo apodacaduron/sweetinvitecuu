@@ -10,13 +10,18 @@ import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-type Event = {
+export type Event = {
   id: string
-  title: string
-  date: string
-  location: string
+  title: string | null
+  event_date: string | null
   created_at: string
 }
+
+type Props = {
+  onEdit: (item: Event) => void;
+  onDelete: (item: Event) => void;
+  queryKeyGetter(): unknown[];
+};
 
 const columnHelper = createColumnHelper<Event>()
 
@@ -25,13 +30,14 @@ const columns = [
     header: 'Title',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('date', {
+  columnHelper.accessor('event_date', {
     header: 'Date',
-    cell: (info) => new Date(info.getValue()).toLocaleDateString(),
-  }),
-  columnHelper.accessor('location', {
-    header: 'Location',
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      const cellValue = info.getValue()
+
+      if (!cellValue) return null
+      return new Date(cellValue).toLocaleDateString()
+    }
   }),
   columnHelper.accessor('created_at', {
     header: 'Created At',
@@ -44,15 +50,25 @@ const columns = [
   }),
 ]
 
-export default function EventsTable() {
-  const { data, isLoading, isError } = useQuery<Event[]>({
-    queryKey: ['events'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('events').select('*')
-      if (error) throw error
-      return data ?? []
+export default function EventsTable(props: Props) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: props.queryKeyGetter(),
+    queryFn: async ({ queryKey }) => {
+      const [, params] = queryKey as [string, { searchInput: string }];
+      const query = supabase
+        .from("events")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .throwOnError();
+
+      if (params?.searchInput) {
+        query.ilike("search", `%${params.searchInput}%`);
+      }
+
+      const { data } = await query;
+      return data ?? [];
     },
-  })
+  });
 
   const table = useReactTable({
     data: data ?? [],
