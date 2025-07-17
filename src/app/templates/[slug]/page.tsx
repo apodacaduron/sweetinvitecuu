@@ -1,43 +1,26 @@
-"use client";
+import { Metadata } from 'next';
 
-import dynamic from 'next/dynamic';
-import { useParams } from 'next/navigation';
-import { Suspense } from 'react';
-
+import TemplatePage from '@/features/templates/pages/TemplatePage';
 import { supabase } from '@/lib/supabase';
-import { useQuery } from '@tanstack/react-query';
 
-export default function Page() {
-  const params = useParams();
-  const slug = params.slug?.toString()
+type Props = {
+  params: Promise<{ slug: string }>;
+};
 
-  const templateQuery = useQuery({
-    queryKey: ["template", slug],
-    queryFn: async () => {
-      if (!slug) throw new Error('Could not load template, slug not provided')
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
 
-      const query = supabase
-        .from("templates")
-        .select("*")
-        .eq("slug", slug)
-        .single()
-        .throwOnError();
+  const query = await supabase
+      .from("templates")
+      .select("name")
+      .eq("slug", slug)
+      .single();
 
-      const { data } = await query;
-      return data ?? [];
-    },
-  });
+  return {
+    title: `${query.data?.name} - Template`,
+  };
+}
 
-  if (templateQuery.isLoading) return <p>Loading...</p>;
-  if (templateQuery.error) return <p>Error loading template</p>;
-
-  const DynamicTemplate = dynamic(
-    () => import(`@/features/cms/templates/${slug}.tsx`)
-  );
-
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DynamicTemplate blocks={templateQuery.data.blocks} />
-    </Suspense>
-  );
+export default function Page({ params }: Props) {
+  return <TemplatePage params={params} />;
 }
