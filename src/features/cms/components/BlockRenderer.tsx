@@ -67,7 +67,7 @@ export default function BlockRenderer(props: Props) {
               <RsvpBlock key={idx} {...nextProps} />
             );
           default:
-            return <div key={idx}>No block found</div>;
+            return <i key={idx}>Block <b>{block?.type}</b> not found please contact us.</i>;
         }
       })}
     </>

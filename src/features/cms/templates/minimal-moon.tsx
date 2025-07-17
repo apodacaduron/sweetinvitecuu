@@ -1,8 +1,6 @@
 "use client";
 
 import { BlockRenderer } from '@/features/cms';
-import { supabase } from '@/lib/supabase';
-import { useQuery } from '@tanstack/react-query';
 
 import pageStyles from './style.module.css';
 
