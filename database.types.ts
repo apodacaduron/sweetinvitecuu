@@ -21,6 +21,7 @@ export type Database = {
           id: string
           name: string | null
           phone: string | null
+          search: string | null
         }
         Insert: {
           created_at?: string
@@ -28,6 +29,7 @@ export type Database = {
           id?: string
           name?: string | null
           phone?: string | null
+          search?: string | null
         }
         Update: {
           created_at?: string
@@ -35,43 +37,13 @@ export type Database = {
           id?: string
           name?: string | null
           phone?: string | null
+          search?: string | null
         }
         Relationships: []
       }
-      event_members: {
-        Row: {
-          created_at: string
-          event_id: string | null
-          id: string
-          role: Database["public"]["Enums"]["role"]
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          event_id?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["role"]
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          event_id?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["role"]
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_members_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       events: {
         Row: {
+          blocks: Json | null
           client_id: string | null
           created_at: string
           created_by: string | null
@@ -79,15 +51,15 @@ export type Database = {
           id: string
           music_url: string | null
           og_image_url: string | null
-          page_sections: Json | null
           seo_description: string | null
           seo_title: string | null
-          slug: string | null
+          slug: string
           template_id: string | null
           theme_color: string | null
           title: string | null
         }
         Insert: {
+          blocks?: Json | null
           client_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -95,15 +67,15 @@ export type Database = {
           id?: string
           music_url?: string | null
           og_image_url?: string | null
-          page_sections?: Json | null
           seo_description?: string | null
           seo_title?: string | null
-          slug?: string | null
+          slug: string
           template_id?: string | null
           theme_color?: string | null
           title?: string | null
         }
         Update: {
+          blocks?: Json | null
           client_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -111,10 +83,9 @@ export type Database = {
           id?: string
           music_url?: string | null
           og_image_url?: string | null
-          page_sections?: Json | null
           seo_description?: string | null
           seo_title?: string | null
-          slug?: string | null
+          slug?: string
           template_id?: string | null
           theme_color?: string | null
           title?: string | null
@@ -224,36 +195,42 @@ export type Database = {
       }
       templates: {
         Row: {
+          blocks: Json | null
           created_at: string
           id: string
           music_url: string | null
           name: string
           og_image_url: string | null
-          sections: Json | null
+          search: string | null
           seo_description: string | null
           seo_title: string | null
+          slug: string
           theme_color: string | null
         }
         Insert: {
+          blocks?: Json | null
           created_at?: string
           id?: string
           music_url?: string | null
           name: string
           og_image_url?: string | null
-          sections?: Json | null
+          search?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          slug: string
           theme_color?: string | null
         }
         Update: {
+          blocks?: Json | null
           created_at?: string
           id?: string
           music_url?: string | null
           name?: string
           og_image_url?: string | null
-          sections?: Json | null
+          search?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          slug?: string
           theme_color?: string | null
         }
         Relationships: []
@@ -263,7 +240,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_slug: {
+        Args: { input: string }
+        Returns: string
+      }
     }
     Enums: {
       role: "owner" | "editor" | "viewer"
