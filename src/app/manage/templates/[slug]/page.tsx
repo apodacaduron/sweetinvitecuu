@@ -108,6 +108,13 @@ export default function Page() {
                   )}
                   Save & Publish
                 </Button>
+                <Button
+                  className="hidden sm:flex"
+                  disabled={saveBlocksMutation.isPending}
+                  variant="outline"
+                >
+                  Page settings
+                </Button>
                 {<Button size="icon" variant="outline" asChild>
                   <a target='_blank' href={previewUrl}>
                     <ExternalLink />

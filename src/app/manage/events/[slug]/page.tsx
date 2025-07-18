@@ -94,7 +94,7 @@ export default function Page() {
             breadcrumbs={[
               { label: "Events", href: "/manage/events" },
               {
-                label: eventQuery.data?.title ?? 'Event details',
+                label: eventQuery.data?.title ?? "Event details",
               },
             ]}
             actions={
@@ -109,13 +109,18 @@ export default function Page() {
                   )}
                   Save & Publish
                 </Button>
-                {
-                  <Button size="icon" variant="outline" asChild>
-                    <a target="_blank" href={previewUrl}>
-                      <ExternalLink />
-                    </a>
-                  </Button>
-                }
+                <Button
+                  className="hidden sm:flex"
+                  disabled={saveBlocksMutation.isPending}
+                  variant="outline"
+                >
+                  Page settings
+                </Button>
+                <Button size="icon" variant="outline" asChild>
+                  <a target="_blank" href={previewUrl}>
+                    <ExternalLink />
+                  </a>
+                </Button>
               </>
             }
           />
