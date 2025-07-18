@@ -9,8 +9,7 @@ export default function GroupEditBlock(props: EditBlockProps<any>) {
     <EditBlockWrapper
       isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
-      className="border-2 border-dashed border-gray-400 rounded-md p-6"
-      childClassName="space-y-4"
+      childClassName="space-y-4 border-2 border-dashed border-gray-400 rounded-md p-6"
     >
       <BlockRenderer blocks={props.properties.blocks} />
     </EditBlockWrapper>
