@@ -1,56 +1,102 @@
-'use client'
+"use client";
 
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
 import { supabase } from '@/lib/supabase';
+import { IconDotsVertical } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
 export type Event = {
-  id: string
-  title: string | null
-  event_date: string | null
-  created_at: string
-}
+  id: string;
+  title: string | null;
+  event_date: string | null;
+  created_at: string;
+};
 
 type Props = {
+  onOpenPreview: (item: Event) => void;
+  onOpenEditor: (item: Event) => void;
   onEdit: (item: Event) => void;
   onDelete: (item: Event) => void;
   queryKeyGetter(): unknown[];
 };
 
-const columnHelper = createColumnHelper<Event>()
-
-const columns = [
-  columnHelper.accessor('title', {
-    header: 'Title',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('event_date', {
-    header: 'Date',
-    cell: (info) => {
-      const cellValue = info.getValue()
-
-      if (!cellValue) return null
-      return new Date(cellValue).toLocaleDateString()
-    }
-  }),
-  columnHelper.accessor('created_at', {
-    header: 'Created At',
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
-  }),
-]
+const columnHelper = createColumnHelper<Event>();
 
 export default function EventsTable(props: Props) {
+  const columns = [
+    columnHelper.accessor("title", {
+      header: "Title",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("event_date", {
+      header: "Date",
+      cell: (info) => {
+        const cellValue = info.getValue();
+
+        if (!cellValue) return null;
+        return new Date(cellValue).toLocaleDateString();
+      },
+    }),
+    columnHelper.accessor("created_at", {
+      header: "Created At",
+      cell: (info) =>
+        new Date(info.getValue()).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+    }),
+    columnHelper.display({
+      header: "Actions",
+      cell: ({ row }) => {
+        const item = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+              >
+                <IconDotsVertical />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => props.onOpenPreview(item)}>
+                Preview
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => props.onOpenEditor(item)}>
+                Go to editor
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => props.onEdit(item)}>
+                Update
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => props.onDelete(item)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    }),
+  ];
+
   const { data, isLoading, isError } = useQuery({
     queryKey: props.queryKeyGetter(),
     queryFn: async ({ queryKey }) => {
@@ -74,7 +120,7 @@ export default function EventsTable(props: Props) {
     data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -113,7 +159,10 @@ export default function EventsTable(props: Props) {
             </TableRow>
           ) : data && data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-muted-foreground">
+              <TableCell
+                colSpan={4}
+                className="text-center text-muted-foreground"
+              >
                 No events found.
               </TableCell>
             </TableRow>
@@ -131,5 +180,5 @@ export default function EventsTable(props: Props) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

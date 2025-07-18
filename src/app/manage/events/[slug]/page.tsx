@@ -16,63 +16,64 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function Page() {
   const params = useParams();
-  const templateId = params.slug?.toString();
+  const eventId = params.slug?.toString();
 
   const queryClient = useQueryClient();
   const [editableBlocks, setEditableBlocks] = useState([]);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const saveBlocksMutation = useMutation({
     mutationFn: async () => {
-      if (!templateId)
-        throw new Error("Could not update blocks, template id not provided");
+      if (!eventId)
+        throw new Error("Could not update blocks, event id not provided");
 
       return supabase
-        .from("templates")
+        .from("events")
         .update({
           blocks: editableBlocks,
         })
-        .eq("id", templateId)
+        .eq("id", eventId)
         .throwOnError();
     },
     async onSuccess(_) {
       await queryClient.invalidateQueries({
-        queryKey: ["template", { id: templateId }],
+        queryKey: ["event", { id: eventId }],
       });
-      toast.success("Template blocks updated");
+      toast.success("Event blocks updated");
     },
     onError(error) {
-      toast.error("Failed to update template blocks", {
+      toast.error("Failed to update event blocks", {
         description: error.message,
       });
     },
   });
   // 2. Cargar datos con react-query
-  const templateQuery = useQuery({
-    queryKey: ["template", { id: templateId }],
+  const eventQuery = useQuery({
+    queryKey: ["event", { id: eventId }],
     queryFn: async () => {
-      if (!templateId)
-        throw new Error("Could not load template, id not provided");
+      if (!eventId) throw new Error("Could not load event, id not provided");
 
       const { data, error } = await supabase
-        .from("templates")
+        .from("events")
         .select("*")
-        .eq("id", templateId)
+        .eq("id", eventId)
         .single();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!templateId,
+    enabled: !!eventId,
   });
 
   // 3. Cuando la data llegue, actualizar el estado local para editar
   useEffect(() => {
-    if (templateQuery.data?.blocks) {
-      setEditableBlocks(templateQuery.data.blocks);
-      setPreviewUrl(`${window.location.origin}/templates/${templateQuery.data?.slug}`)
+    if (eventQuery.data?.blocks) {
+      setEditableBlocks(eventQuery.data.blocks);
+      setPreviewUrl(
+        `${window.location.origin}/events/${eventQuery.data?.slug}`
+      );
     }
-  }, [templateQuery.data]);
+  }, [eventQuery.data]);
 
   return (
     <EditableBlocksProvider
@@ -91,9 +92,9 @@ export default function Page() {
         <SidebarInset>
           <SiteHeader
             breadcrumbs={[
-              { label: "Templates", href: "/manage/templates" },
+              { label: "Events", href: "/manage/events" },
               {
-                label: templateQuery.data?.name ?? 'Template details',
+                label: eventQuery.data?.title ?? 'Event details',
               },
             ]}
             actions={
@@ -108,34 +109,36 @@ export default function Page() {
                   )}
                   Save & Publish
                 </Button>
-                {<Button size="icon" variant="outline" asChild>
-                  <a target='_blank' href={previewUrl}>
-                    <ExternalLink />
-                  </a>
-                </Button>}
+                {
+                  <Button size="icon" variant="outline" asChild>
+                    <a target="_blank" href={previewUrl}>
+                      <ExternalLink />
+                    </a>
+                  </Button>
+                }
               </>
             }
           />
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-                {templateQuery.isLoading && (
+                {eventQuery.isLoading && (
                   <p className="text-center text-gray-500">
                     Cargando plantilla...
                   </p>
                 )}
-                {templateQuery.isError && (
+                {eventQuery.isError && (
                   <p className="text-center text-red-600">
                     Error al cargar la plantilla.
                   </p>
                 )}
-                {!templateQuery.isLoading &&
-                  !templateQuery.isError &&
+                {!eventQuery.isLoading &&
+                  !eventQuery.isError &&
                   editableBlocks.length > 0 && (
                     <EditBlockRenderer blocks={editableBlocks} />
                   )}
-                {!templateQuery.isLoading &&
-                  !templateQuery.isError &&
+                {!eventQuery.isLoading &&
+                  !eventQuery.isError &&
                   editableBlocks.length === 0 && (
                     <p className="text-center text-gray-500">No hay bloques.</p>
                   )}

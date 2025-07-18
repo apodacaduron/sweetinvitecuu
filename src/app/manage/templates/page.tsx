@@ -1,6 +1,7 @@
 "use client";
 
 import { PlusIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 
 import { AppSidebar } from '@/components/app-sidebar';
@@ -12,6 +13,7 @@ import { DeleteTemplateDialog, TemplateDialog, TemplatesTable } from '@/features
 import { Template } from '@/features/templates/components/TemplatesTable';
 
 export default function Page() {
+  const router = useRouter();
   const [searchInput, setSearchInput] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formDialogOpen, setFormDialogOpen] = useState(false);
@@ -49,6 +51,14 @@ export default function Page() {
     }
   }
 
+  function openEditor(item) {
+    router.push(`/manage/templates/${item.id}`);
+  }
+
+  function openPreview(item) {
+    window.open(`${window.location.origin}/templates/${item.slug}`);
+  }
+
   return (
     <SidebarProvider
       style={
@@ -60,7 +70,11 @@ export default function Page() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader title="Templates" />
+        <SiteHeader breadcrumbs={[
+              {
+                label: 'Templates',
+              },
+            ]} />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -102,6 +116,8 @@ export default function Page() {
 
               {/* Templates table */}
               <TemplatesTable
+                onOpenPreview={openPreview}
+                onOpenEditor={openEditor}
                 onEdit={openEditDialog}
                 onDelete={openDeleteDialog}
                 queryKeyGetter={queryKeyGetter}

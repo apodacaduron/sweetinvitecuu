@@ -1,6 +1,7 @@
 "use client";
 
 import { PlusIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 
 import { AppSidebar } from '@/components/app-sidebar';
@@ -16,6 +17,7 @@ export default function Page() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<Event | null>(null);
+  const router = useRouter()
 
   const queryKeyGetter = useCallback(() => {
     return searchInput ? ["events", { searchInput }] : ["events"];
@@ -49,6 +51,14 @@ export default function Page() {
     }
   }
 
+  function openEditor(item) {
+    router.push(`/manage/events/${item.id}`)
+  }
+
+  function openPreview(item) {
+    window.open(`${window.location.origin}/events/${item.slug}`)
+  }
+
   return (
     <SidebarProvider
       style={
@@ -60,7 +70,9 @@ export default function Page() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader title="Events" />
+        <SiteHeader breadcrumbs={[{
+          label: 'Events',
+        }]} />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -102,6 +114,8 @@ export default function Page() {
 
               {/* Events table */}
               <EventsTable
+                onOpenPreview={openPreview}
+                onOpenEditor={openEditor}
                 onEdit={openEditDialog}
                 onDelete={openDeleteDialog}
                 queryKeyGetter={queryKeyGetter}

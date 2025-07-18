@@ -23,8 +23,10 @@ export type Template = {
 };
 
 type Props = {
-  onEdit: (client: Template) => void;
-  onDelete: (client: Template) => void;
+  onOpenPreview: (item: Template) => void;
+  onOpenEditor: (item: Template) => void;
+  onEdit: (item: Template) => void;
+  onDelete: (item: Template) => void;
   queryKeyGetter(): unknown[];
 };
 
@@ -67,8 +69,14 @@ export default function TemplatesTable(props: Props) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => props.onOpenPreview(item)}>
+                Preview
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => props.onOpenEditor(item)}>
+                Go to editor
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => props.onEdit(item)}>
-                Edit
+                Update
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
