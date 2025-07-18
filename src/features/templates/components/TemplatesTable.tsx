@@ -18,7 +18,7 @@ import {
 export type Template = {
   id: string;
   name: string | null;
-  theme_color: string | null;
+  slug: string | null;
   created_at: string;
 };
 
@@ -38,8 +38,8 @@ export default function TemplatesTable(props: Props) {
       header: "Name",
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("theme_color", {
-      header: "Theme Color",
+    columnHelper.accessor("slug", {
+      header: "Slug",
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("created_at", {

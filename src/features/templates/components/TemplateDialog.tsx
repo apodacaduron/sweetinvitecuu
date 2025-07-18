@@ -12,6 +12,7 @@ import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { slugify } from '@/lib/helpers';
 import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogProps } from '@radix-ui/react-dialog';
@@ -21,6 +22,7 @@ import { Template } from './TemplatesTable';
 
 const templateSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
+  slug: z.string().min(1, { message: "Slug is required" }),
 });
 
 type TemplateSchema = z.infer<typeof templateSchema>;
@@ -39,8 +41,12 @@ export default function TemplateForm(props: Props) {
     resolver: zodResolver(templateSchema),
     defaultValues: {
       name: props.item?.name ?? "",
+      slug: props.item?.slug ?? "",
     },
   });
+  const nameValue = form.watch('name'); // 🔁 Reactively watch "name"
+  const slug = slugify(nameValue || ''); // slugify it safely
+
   const createMutation = useMutation({
     mutationFn: async (data: TemplateSchema) => {
       return supabase.from("templates").insert(data).throwOnError();
@@ -99,8 +105,13 @@ export default function TemplateForm(props: Props) {
   useEffect(() => {
     form.reset({
       name: props.item?.name ?? "",
+      slug: props.item?.slug ?? "",
     });
   }, [props.item, form]);
+  
+  useEffect(() => {
+    form.setValue('slug', slugify(nameValue))
+  }, [nameValue]);
 
   return (
     <Dialog {...props.dialogProps}>
@@ -123,6 +134,20 @@ export default function TemplateForm(props: Props) {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Template name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Slug</FormLabel>
+                  <FormControl>
+                    <Input disabled placeholder="Slug" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
