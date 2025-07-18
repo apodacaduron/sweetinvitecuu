@@ -24,21 +24,21 @@ export default function DeleteClientDialog(props: Props) {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!props.itemId)
-        throw new Error("Could not delete client, id was not provided");
+        throw new Error("Could not delete template, id was not provided");
 
       return supabase
-        .from("clients")
+        .from("templates")
         .delete()
         .eq("id", props.itemId)
         .throwOnError();
     },
     async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: props.queryKeyGetter() });
-      toast.success("Client deleted");
+      toast.success("Template deleted");
       props.onSuccess?.();
     },
     onError(error) {
-      toast.error("Failed to delete client", {
+      toast.error("Failed to delete template", {
         description: error.message,
       });
     },

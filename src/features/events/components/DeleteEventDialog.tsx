@@ -34,7 +34,7 @@ export default function DeleteClientDialog(props: Props) {
     },
     async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: props.queryKeyGetter() });
-      toast.success("Client deleted");
+      toast.success("Event deleted");
       props.onSuccess?.();
     },
     onError(error) {
