@@ -120,3 +120,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.diagonal-lines {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.05) 0,
+    rgba(0, 0, 0, 0.05) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+}

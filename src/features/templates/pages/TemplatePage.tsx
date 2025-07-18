@@ -10,26 +10,26 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-
 export default function TemplatePage({ params }: Props) {
     const { slug } = React.use(params)
+    const templateSlug = slug?.toString()
 
   const templateQuery = useQuery({
-    queryKey: ["template", slug?.toString()],
+    queryKey: ["template", { slug: templateSlug}],
     queryFn: async () => {
-      if (!slug?.toString()) throw new Error('Could not load template, slug not provided')
+      if (!templateSlug) throw new Error('Could not load template, slug not provided')
 
       const query = supabase
         .from("templates")
         .select("*")
-        .eq("slug", slug.toString())
+        .eq("slug", templateSlug)
         .single()
         .throwOnError();
 
       const { data } = await query;
       return data ?? [];
     },
-    enabled: Boolean(slug?.toString())
+    enabled: Boolean(templateSlug)
   });
 
   if (templateQuery.isLoading) return <p>Loading...</p>;

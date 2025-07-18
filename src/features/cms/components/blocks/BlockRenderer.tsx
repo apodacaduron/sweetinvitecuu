@@ -6,9 +6,8 @@ import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
 import ImageBlock from './ImageBlock';
 import ItineraryBlock from './ItineraryBlock';
-import LocationBlock from './LocationBlock';
+import RowBlock from './RowBlock';
 import RsvpBlock from './RsvpBlock';
-import ScheduleBlock from './ScheduleBlock';
 import TextBlock from './TextBlock';
 
 type Props = {
@@ -37,22 +36,16 @@ export default function BlockRenderer(props: Props) {
           ...block,
         };
 
+        if (!block.visible) return null
+
         switch (block?.type) {
           case "group":
             return <GroupBlock key={idx} {...nextProps} />;
           case "image":
             return <ImageBlock key={idx} {...nextProps} />;
-          case "schedule":
-            return (
-              <ScheduleBlock key={idx} {...nextProps} />
-            );
           case "itinerary":
             return (
               <ItineraryBlock key={idx} {...nextProps} />
-            );
-          case "location":
-            return (
-              <LocationBlock key={idx} {...nextProps} />
             );
           case "text":
             return (
@@ -65,6 +58,10 @@ export default function BlockRenderer(props: Props) {
           case "rsvp":
             return (
               <RsvpBlock key={idx} {...nextProps} />
+            );
+          case "row":
+            return (
+              <RowBlock key={idx} {...nextProps} />
             );
           default:
             return <i key={idx}>Block <b>{block?.type}</b> not found please contact us.</i>;

@@ -33,7 +33,7 @@ type Props = {
 };
 
 export default function EventForm(props: Props) {
-  const queryEvent = useQueryClient();
+  const queryClient = useQueryClient();
 
   const form = useForm<EventSchema>({
     resolver: zodResolver(eventSchema),
@@ -46,7 +46,7 @@ export default function EventForm(props: Props) {
       return supabase.from("events").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
-      await queryEvent.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: props.queryKeyGetter(),
       });
       toast.success("Event added!", {
@@ -74,7 +74,7 @@ export default function EventForm(props: Props) {
         .throwOnError();
     },
     async onSuccess(_, variables) {
-      await queryEvent.invalidateQueries({ queryKey: ["events"] });
+      await queryClient.invalidateQueries({ queryKey: ["events"] });
       toast.success("Event updated");
       form.reset();
       props.onSuccess?.();

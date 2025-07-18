@@ -1,6 +1,6 @@
 "use client";
 
-import { BlockRenderer } from '@/features/cms';
+import { BlockRenderer } from '@/features/cms/components';
 
 import pageStyles from './style.module.css';
 

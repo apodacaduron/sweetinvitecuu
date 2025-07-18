@@ -13,16 +13,17 @@ type Props = {
 
 export default function EventPage({ params }: Props) {
     const {slug} = React.use(params)
+    const eventSlug = slug?.toString()
 
   const eventQuery = useQuery({
-    queryKey: ["event", slug.toString()],
+    queryKey: ["event", { slug: eventSlug }],
     queryFn: async () => {
-      if (!slug.toString()) throw new Error("Could not load event, slug not provided");
+      if (!eventSlug) throw new Error("Could not load event, slug not provided");
 
       const query = supabase
         .from("events")
         .select("*, templates(*)")
-        .eq("slug", slug.toString())
+        .eq("slug", eventSlug)
         .single()
         .throwOnError();
 
