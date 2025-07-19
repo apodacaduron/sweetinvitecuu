@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import EditBlockRenderer from '@/features/cms/components/edit-blocks/EditBlockRenderer';
 import { EditableBlocksProvider } from '@/features/cms/context/EditableBlocksContext';
+import { JsonEditor } from '@/features/templates/components/JsonEditor';
 import { supabase } from '@/lib/supabase';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -19,8 +20,9 @@ export default function Page() {
   const templateId = params.slug?.toString();
 
   const queryClient = useQueryClient();
+  const [editorType, setEditorType] = useState<"ui" | "json">("ui");
   const [editableBlocks, setEditableBlocks] = useState([]);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const saveBlocksMutation = useMutation({
     mutationFn: async () => {
@@ -70,7 +72,9 @@ export default function Page() {
   useEffect(() => {
     if (templateQuery.data?.blocks) {
       setEditableBlocks(templateQuery.data.blocks);
-      setPreviewUrl(`${window.location.origin}/templates/${templateQuery.data?.slug}`)
+      setPreviewUrl(
+        `${window.location.origin}/templates/${templateQuery.data?.slug}`
+      );
     }
   }, [templateQuery.data]);
 
@@ -93,7 +97,7 @@ export default function Page() {
             breadcrumbs={[
               { label: "Templates", href: "/manage/templates" },
               {
-                label: templateQuery.data?.name ?? 'Template details',
+                label: templateQuery.data?.name ?? "Template details",
               },
             ]}
             actions={
@@ -115,17 +119,25 @@ export default function Page() {
                 >
                   Page settings
                 </Button>
-                {<Button size="icon" variant="outline" asChild>
-                  <a target='_blank' href={previewUrl}>
-                    <ExternalLink />
-                  </a>
-                </Button>}
+                  <Button size="icon" variant="outline" asChild>
+                    <a target="_blank" href={previewUrl}>
+                      <ExternalLink />
+                    </a>
+                  </Button>
               </>
             }
           />
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+                <Button
+                  className="hidden sm:flex"
+                  onClick={() => setEditorType((prevType) => prevType === 'ui' ? 'json' : 'ui')}
+                  disabled={saveBlocksMutation.isPending}
+                  variant="outline"
+                >
+                  {editorType === 'ui' ? 'JSON View' : 'UI View'}
+                </Button>
                 {templateQuery.isLoading && (
                   <p className="text-center text-gray-500">
                     Cargando plantilla...
@@ -138,9 +150,17 @@ export default function Page() {
                 )}
                 {!templateQuery.isLoading &&
                   !templateQuery.isError &&
-                  editableBlocks.length > 0 && (
+                  editableBlocks.length > 0 &&
+                  (editorType === "ui" ? (
                     <EditBlockRenderer blocks={editableBlocks} />
-                  )}
+                  ) : (
+                    <JsonEditor
+                      value={editableBlocks}
+                      onChange={(newJson) =>
+                        setEditableBlocks(newJson)
+                      }
+                    />
+                  ))}
                 {!templateQuery.isLoading &&
                   !templateQuery.isError &&
                   editableBlocks.length === 0 && (
