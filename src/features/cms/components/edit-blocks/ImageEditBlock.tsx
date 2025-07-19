@@ -9,7 +9,7 @@ import { EditBlockWrapper } from './EditBlockWrapper';
 
 export default function ImageEditBlock(props: EditBlockProps<any>) {
   const { updateBlock, parentData } = useEditableBlocks();
-  const [image, setImage] = useState(props.properties.image || "");
+  const [image, setImage] = useState(props.properties.file.publicUrl || "");
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const { handleFileChange, handleFile } = useFileUploader({
@@ -26,8 +26,8 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
   });
 
   useEffect(() => {
-    setImage(props.properties.image || "");
-  }, [props.properties.image]);
+    setImage(props.properties.file.publicUrl || "");
+  }, [props.properties.file.publicUrl]);
 
   // Handlers drag & drop
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
