@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from 'date-fns';
-import { ChevronDownIcon, Loader2Icon } from 'lucide-react';
+import { Check, ChevronDownIcon, ChevronsUpDown, Loader2Icon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -9,6 +9,9 @@ import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import {
+    Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList
+} from '@/components/ui/command';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
@@ -21,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { slugify } from '@/lib/helpers';
 import { supabase } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogProps } from '@radix-ui/react-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -32,6 +36,7 @@ const eventSchema = z.object({
   slug: z.string(),
   event_date: z.date({ error: "Event date is required" }),
   template_id: z.uuidv4(),
+  client_id: z.uuidv4(),
 });
 
 type EventSchema = z.infer<typeof eventSchema>;
@@ -55,22 +60,23 @@ export default function EventForm(props: Props) {
         ? new Date(props.item.event_date)
         : new Date(),
       template_id: props.item?.template_id ?? "",
+      client_id: props.item?.client_id ?? "",
     },
   });
   const nameValue = form.watch("title"); // 🔁 Reactively watch "name"
 
-  const templatesQuery = useQuery({
-    queryKey: ["select-template"],
-    queryFn: async () => {
-      const query = supabase
-        .from("templates")
-        .select("*")
-        .order("created_at", { ascending: false });
+  // const templatesQuery = useQuery({
+  //   queryKey: ["select-template"],
+  //   queryFn: async () => {
+  //     const query = supabase
+  //       .from("templates")
+  //       .select("*")
+  //       .order("created_at", { ascending: false });
 
-      const { data } = await query;
-      return data ?? [];
-    },
-  });
+  //     const { data } = await query;
+  //     return data ?? [];
+  //   },
+  // });
 
   const createMutation = useMutation({
     mutationFn: async (data: EventSchema) => {
@@ -145,6 +151,7 @@ export default function EventForm(props: Props) {
         ? new Date(props.item.event_date)
         : new Date(),
       template_id: props.item?.template_id ?? "",
+      client_id: props.item?.client_id ?? "",
     });
   }, [props.item, form]);
 
@@ -279,31 +286,176 @@ export default function EventForm(props: Props) {
 
             <FormField
               control={form.control}
-              name="template_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Template</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={templatesQuery.isLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a template" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {templatesQuery.data?.map((template) => (
-                        <SelectItem key={template.id} value={template.id}>
-                          {template.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              name="client_id"
+              render={({ field }) => {
+                const [open, setOpen] = React.useState(false);
+                const [search, setSearch] = React.useState("");
+
+                const templatesQuery = useQuery({
+                  queryKey: ["template-search", search],
+                  queryFn: async () => {
+                    const { data, error } = await supabase
+                      .from("templates")
+                      .select("id, name, search")
+                      .ilike("search", `%${search}%`) // búsqueda insensible a mayúsculas
+                      .order("created_at", { ascending: false });
+
+                    if (error) throw error;
+                    return data ?? [];
+                  },
+                  enabled: open || !!search,
+                });
+
+                const selectedTemplate = templatesQuery.data?.find(
+                  (t) => t.id === field.value
+                );
+
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Template</FormLabel>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                              "justify-between w-full",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {selectedTemplate?.name ?? "Select a template"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search template..."
+                            className="h-9"
+                            value={search}
+                            onValueChange={setSearch}
+                          />
+                          <CommandList>
+                            <CommandEmpty>No template found.</CommandEmpty>
+                            <CommandGroup>
+                              {templatesQuery.data?.map((template) => (
+                                <CommandItem
+                                  key={template.id}
+                                  value={template.name}
+                                  onSelect={() => {
+                                    form.setValue("template_id", template.id);
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {template.name}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      template.id === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="client_id"
+              render={({ field }) => {
+                const [open, setOpen] = React.useState(false);
+                const [search, setSearch] = React.useState("");
+
+                const clientsQuery = useQuery({
+                  queryKey: ["client-search", search],
+                  queryFn: async () => {
+                    const { data, error } = await supabase
+                      .from("clients")
+                      .select("id, name, search")
+                      .ilike("search", `%${search}%`) // búsqueda insensible a mayúsculas
+                      .order("created_at", { ascending: false });
+
+                    if (error) throw error;
+                    return data ?? [];
+                  },
+                  enabled: open || !!search,
+                });
+
+                const selectedTemplate = clientsQuery.data?.find(
+                  (t) => t.id === field.value
+                );
+
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Template</FormLabel>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                              "justify-between w-full",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {selectedTemplate?.name ?? "Select a client"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search client..."
+                            className="h-9"
+                            value={search}
+                            onValueChange={setSearch}
+                          />
+                          <CommandList>
+                            <CommandEmpty>No client found.</CommandEmpty>
+                            <CommandGroup>
+                              {clientsQuery.data?.map((client) => (
+                                <CommandItem
+                                  key={client.id}
+                                  value={client.name ?? ''}
+                                  onSelect={() => {
+                                    form.setValue("client_id", client.id);
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {client.name}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      client.id === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             <Button

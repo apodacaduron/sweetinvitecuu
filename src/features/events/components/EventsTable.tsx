@@ -15,14 +15,9 @@ import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-export type Event = {
-  id: string;
-  title: string | null;
-  slug: string | null;
-  event_date: string | null;
-  template_id: string | null;
-  created_at: string;
-};
+import { Tables } from '../../../../database.types';
+
+export type Event = Tables<'events'>;
 
 type Props = {
   onOpenPreview: (item: Event) => void;
