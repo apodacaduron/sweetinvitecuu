@@ -2,7 +2,8 @@ import { toast } from 'sonner';
 
 import { supabase } from '@/lib/supabase';
 
-type UseFileUploader = { foldername: string, filename: string, onUpdate: (url: string) => void, bucket: string }
+type FileResponseData = { publicUrl: string, filePath: string, fileName: string, bucket: string }
+type UseFileUploader = { foldername: string, filename: string, onUpdate: (fileResponse: FileResponseData) => void, bucket: string }
 
 export function useFileUploader(options: UseFileUploader) {
   const handleFile = async (file: File | null) => {
@@ -14,7 +15,7 @@ export function useFileUploader(options: UseFileUploader) {
     }
 
     const fileExt = file.name.split(".").pop();
-    const fileName = `${options.filename}.${fileExt}`;
+    const fileName = `${options.filename}-${Date.now()}.${fileExt}`;
     const filePath = `templates/${options.foldername}/${fileName}`;
 
     const { error } = await supabase.storage
@@ -30,7 +31,7 @@ export function useFileUploader(options: UseFileUploader) {
 
     const { data } = supabase.storage.from(options.bucket).getPublicUrl(filePath);
     if (data?.publicUrl) {
-      options.onUpdate(`${data.publicUrl}?t=${Date.now()}`);
+      options.onUpdate({ publicUrl: data.publicUrl, filePath, fileName, bucket: options.bucket });
       toast("✅ Imagen subida con éxito", {
         description: "La imagen ha sido cargada y la URL actualizada.",
       });

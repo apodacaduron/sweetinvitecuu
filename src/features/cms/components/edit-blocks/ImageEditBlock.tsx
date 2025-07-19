@@ -12,15 +12,16 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
   const [image, setImage] = useState(props.properties.image || "");
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const updateImage = (url: string) => {
-    setImage(url);
-    updateBlock({ ...props, properties: { ...props.properties, image: url } });
-  };
-
   const { handleFileChange, handleFile } = useFileUploader({
-    foldername: parentData.id,
+    foldername: parentData?.id ?? "",
     filename: props.id,
-    onUpdate: updateImage,
+    onUpdate(fileResponse) {
+      setImage(fileResponse.publicUrl);
+      updateBlock({
+        ...props,
+        properties: { ...props.properties, file: fileResponse },
+      });
+    },
     bucket: "media",
   });
 
