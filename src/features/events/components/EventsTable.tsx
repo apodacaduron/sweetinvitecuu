@@ -18,7 +18,9 @@ import {
 export type Event = {
   id: string;
   title: string | null;
+  slug: string | null;
   event_date: string | null;
+  template_id: string | null;
   created_at: string;
 };
 
@@ -36,6 +38,10 @@ export default function EventsTable(props: Props) {
   const columns = [
     columnHelper.accessor("title", {
       header: "Title",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("slug", {
+      header: "Slug",
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("event_date", {

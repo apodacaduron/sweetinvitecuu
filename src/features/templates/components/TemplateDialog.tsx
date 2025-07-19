@@ -45,7 +45,6 @@ export default function TemplateForm(props: Props) {
     },
   });
   const nameValue = form.watch('name'); // 🔁 Reactively watch "name"
-  const slug = slugify(nameValue || ''); // slugify it safely
 
   const createMutation = useMutation({
     mutationFn: async (data: TemplateSchema) => {
