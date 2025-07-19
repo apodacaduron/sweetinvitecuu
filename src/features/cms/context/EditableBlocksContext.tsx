@@ -1,17 +1,21 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
+import { Json, Tables } from '../../../../database.types';
+
 type Block = any; // Replace with your proper block type if available
 
 type EditableBlocksContextType = {
+  parentData: Tables<'events'> | Tables<'templates'> | undefined;
   editableBlocks: Block[];
   updateBlock: (updatedBlock: Block) => void;
-  setEditableBlocks: React.Dispatch<React.SetStateAction<any[]>>
+  setEditableBlocks: React.Dispatch<React.SetStateAction<Json>>
 };
 
 type Props = {
     children: ReactNode
-    editableBlocks: any
-    setEditableBlocks: any
+    parentData: EditableBlocksContextType['parentData']
+    editableBlocks: EditableBlocksContextType['editableBlocks']
+    setEditableBlocks: EditableBlocksContextType['setEditableBlocks']
 }
 
 const EditableBlocksContext = createContext<EditableBlocksContextType | undefined>(undefined);
@@ -40,7 +44,7 @@ export function EditableBlocksProvider(props: Props) {
   };
 
   return (
-    <EditableBlocksContext.Provider value={{ editableBlocks: props.editableBlocks, updateBlock, setEditableBlocks: props.setEditableBlocks }}>
+    <EditableBlocksContext.Provider value={{ editableBlocks: props.editableBlocks, updateBlock, setEditableBlocks: props.setEditableBlocks, parentData: props.parentData }}>
       {props.children}
     </EditableBlocksContext.Provider>
   );

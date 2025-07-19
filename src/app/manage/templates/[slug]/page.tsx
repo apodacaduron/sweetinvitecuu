@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Loader2Icon } from 'lucide-react';
+import { Code, Cog, ExternalLink, Layout, Loader2Icon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -8,12 +8,18 @@ import { toast } from 'sonner';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import EditBlockRenderer from '@/features/cms/components/edit-blocks/EditBlockRenderer';
 import { EditableBlocksProvider } from '@/features/cms/context/EditableBlocksContext';
 import { JsonEditor } from '@/features/templates/components/JsonEditor';
 import { supabase } from '@/lib/supabase';
+import { IconDotsVertical } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { Tables } from '../../../../../database.types';
 
 export default function Page() {
   const params = useParams();
@@ -21,7 +27,7 @@ export default function Page() {
 
   const queryClient = useQueryClient();
   const [editorType, setEditorType] = useState<"ui" | "json">("ui");
-  const [editableBlocks, setEditableBlocks] = useState([]);
+  const [editableBlocks, setEditableBlocks] = useState<Tables<'templates'>['blocks']>([]);
   const [previewUrl, setPreviewUrl] = useState("");
 
   const saveBlocksMutation = useMutation({
@@ -82,6 +88,7 @@ export default function Page() {
     <EditableBlocksProvider
       editableBlocks={editableBlocks}
       setEditableBlocks={setEditableBlocks}
+      parentData={templateQuery.data}
     >
       <SidebarProvider
         style={
@@ -112,32 +119,43 @@ export default function Page() {
                   )}
                   Save & Publish
                 </Button>
-                <Button
-                  className="hidden sm:flex"
-                  disabled={saveBlocksMutation.isPending}
-                  variant="outline"
-                >
-                  Page settings
-                </Button>
-                  <Button size="icon" variant="outline" asChild>
-                    <a target="_blank" href={previewUrl}>
-                      <ExternalLink />
-                    </a>
-                  </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                      size="icon"
+                    >
+                      <IconDotsVertical />
+                      <span className="sr-only">Open menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setEditorType((prevType) =>
+                          prevType === "ui" ? "json" : "ui"
+                        )
+                      }
+                    >
+                      {editorType === "ui" ? <Code /> : <Layout />}
+                      {editorType === "ui" ? "JSON View" : "UI View"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem><Cog /> Page settings</DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <a target="_blank" href={previewUrl}>
+                        <ExternalLink />
+                        Preview
+                      </a>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             }
           />
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-                <Button
-                  className="hidden sm:flex"
-                  onClick={() => setEditorType((prevType) => prevType === 'ui' ? 'json' : 'ui')}
-                  disabled={saveBlocksMutation.isPending}
-                  variant="outline"
-                >
-                  {editorType === 'ui' ? 'JSON View' : 'UI View'}
-                </Button>
                 {templateQuery.isLoading && (
                   <p className="text-center text-gray-500">
                     Cargando plantilla...
@@ -156,9 +174,7 @@ export default function Page() {
                   ) : (
                     <JsonEditor
                       value={editableBlocks}
-                      onChange={(newJson) =>
-                        setEditableBlocks(newJson)
-                      }
+                      onChange={(newJson) => setEditableBlocks(newJson)}
                     />
                   ))}
                 {!templateQuery.isLoading &&

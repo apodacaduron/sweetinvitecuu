@@ -14,12 +14,14 @@ import { EditableBlocksProvider } from '@/features/cms/context/EditableBlocksCon
 import { supabase } from '@/lib/supabase';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { Tables } from '../../../../../database.types';
+
 export default function Page() {
   const params = useParams();
   const eventId = params.slug?.toString();
 
   const queryClient = useQueryClient();
-  const [editableBlocks, setEditableBlocks] = useState([]);
+  const [editableBlocks, setEditableBlocks] = useState<Tables<'events'>['blocks']>([]);
   const [previewUrl, setPreviewUrl] = useState("");
 
   const saveBlocksMutation = useMutation({
@@ -79,6 +81,7 @@ export default function Page() {
     <EditableBlocksProvider
       editableBlocks={editableBlocks}
       setEditableBlocks={setEditableBlocks}
+      parentData={eventQuery.data}
     >
       <SidebarProvider
         style={

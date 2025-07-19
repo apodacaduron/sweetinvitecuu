@@ -1,27 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useFileUploader } from '@/hooks/useFileUploader';
 
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
 import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
-export type ImageProperties = {
-  image: string;
-};
-
-export default function ImageEditBlock(props: EditBlockProps<ImageProperties>) {
-  const { updateBlock } = useEditableBlocks();
+export default function ImageEditBlock(props: EditBlockProps<any>) {
+  const { updateBlock, parentData } = useEditableBlocks();
   const [image, setImage] = useState(props.properties.image || "");
+  const inputFileRef = useRef<HTMLInputElement>(null);
+
+  const updateImage = (url: string) => {
+    setImage(url);
+    updateBlock({ ...props, properties: { ...props.properties, image: url } });
+  };
+
+  const { handleFileChange, handleFile } = useFileUploader({
+    foldername: parentData.id,
+    filename: props.id,
+    onUpdate: updateImage,
+    bucket: "media",
+  });
 
   useEffect(() => {
     setImage(props.properties.image || "");
   }, [props.properties.image]);
 
-  useEffect(() => {
-    updateBlock({ ...props, properties: { ...props.properties, image } });
-  }, [image]);
+  // Handlers drag & drop
+  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!props.visible) return;
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
+
+  const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  // Abrir selector al clickear imagen o área
+  const onClickArea = () => {
+    if (!props.visible) return;
+    inputFileRef.current?.click();
+  };
 
   return (
     <EditBlockWrapper
@@ -29,26 +52,44 @@ export default function ImageEditBlock(props: EditBlockProps<ImageProperties>) {
       isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
-      <Label htmlFor={`${props.id}-image-url`} className="mb-2">
-        URL de la imagen
+      <Label htmlFor={`${props.id}-file-upload`} className="mb-2 block">
+        {image
+          ? "Haz clic en la imagen para reemplazarla, o arrastra una imagen aquí"
+          : "Sube una imagen arrastrando o haciendo clic aquí"}
       </Label>
-      <Input
-        id={`${props.id}-image-url`}
-        type="text"
-        placeholder="https://example.com/mi-imagen.jpg"
-        value={image}
-        onChange={(e) => setImage(e.target.value)}
-        className="mb-4"
+
+      {/* Input file oculto */}
+      <input
+        id={`${props.id}-file-upload`}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
         disabled={!props.visible}
+        ref={inputFileRef}
+        style={{ display: "none" }}
       />
-      {image && (
-        <img
-          id={props.id}
-          src={image}
-          alt="Vista previa imagen"
-          className="w-full max-h-64 rounded border object-contain"
-        />
-      )}
+
+      {/* Dropzone + imagen clickable */}
+      <div
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onClick={onClickArea}
+        className={`cursor-pointer w-full max-h-64 rounded border border-dashed border-gray-400 flex items-center justify-center overflow-hidden ${
+          image ? "" : "min-h-[150px]"
+        }`}
+      >
+        {image ? (
+          <img
+            src={image}
+            alt="Vista previa imagen"
+            className="object-contain w-full max-h-64"
+          />
+        ) : (
+          <span className="text-gray-500">
+            Arrastra la imagen aquí o haz clic para seleccionar archivo
+          </span>
+        )}
+      </div>
     </EditBlockWrapper>
   );
 }
