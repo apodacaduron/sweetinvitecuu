@@ -1,5 +1,8 @@
 import Case from 'case';
-import { Eye, EyeClosed } from 'lucide-react';
+import {
+    CalendarIcon, Eye, EyeClosed, FileTextIcon, GridIcon, ImageIcon, LayersIcon, Link2Icon,
+    MapPinIcon, UserCheckIcon
+} from 'lucide-react';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -21,10 +24,35 @@ type Props = {
   block: EditBlockProps<any>
 };
 
+
+export const blockTypeIconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  // Básicos
+  image: ImageIcon,           // Para imágenes
+  text: FileTextIcon,         // Para bloques de texto
+  link: Link2Icon,            // Para enlaces
+
+  // Contenedores y grupos
+  group: LayersIcon,          // Para grupos o contenedores de bloques
+  row: GridIcon,              // Para filas u organización horizontal
+
+  // Funcionales específicos
+  timeline: CalendarIcon,     // Para líneas de tiempo, eventos
+  gallery: ImageIcon,         // Galerías de imágenes, reutilizo ImageIcon
+  rsvp: UserCheckIcon,        // Para formularios RSVP o confirmación de asistencia
+
+  // Otros (puedes agregar más si aparecen más tipos)
+  default: MapPinIcon,        // Ícono por defecto si no se reconoce el tipo
+};
+
+function BlockIcon({ type }: { type: string }) {
+  const Icon = blockTypeIconMap[type] || blockTypeIconMap.default;
+  return <Icon className="h-5 w-5 text-gray-500" />;
+}
+
 export function EditBlockWrapper(props: Props) {
   return (
     <div className={twMerge("relative", props.className)}>
-      <h4 className='font-semibold text-xl mb-1'>{`${Case.title(props.block.type)}`}</h4>
+      <h4 className='font-semibold text-xl mb-1 flex items-center gap-2'><BlockIcon type={props.block.type} /> {`${Case.title(props.block.type)}`}</h4>
       <div className={twMerge(props.isVisible ? 'opacity-100' : 'opacity-70 diagonal-lines pointer-events-none', props.childClassName)}>
         {props.children}
       </div>
