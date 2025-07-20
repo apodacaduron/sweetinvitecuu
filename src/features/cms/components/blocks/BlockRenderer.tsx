@@ -21,6 +21,7 @@ export type BlockProps<T> = {
   properties: T;
   id?: string;
   class: string;
+  type: string;
   style?: CSSProperties | undefined;
   pageStyles: {
     readonly [key: string]: string;

@@ -1,0 +1,94 @@
+.wrapper {
+  background-image: url("https://lwotpjzdnsbqfetmucxp.supabase.co/storage/v1/object/public/assets/minimal-moon/white-simple-textured-design-background.jpg");
+  background-size: cover;
+  font-family: var(--font-old-standard);
+}
+
+.cover {
+  height: 100vh;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.parents {
+  display: flex;
+  text-align: center;
+}
+
+.company-of-our-parents {
+  text-transform: uppercase;
+  text-align: center;
+  font-size: clamp(1.18rem, 0.1514rem + 4.5714vw, 1.58rem);
+  padding: 0 16px
+}
+
+.invitation-container {
+  padding: 64px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.we-invite-you {
+  text-align: center;
+  font-size: clamp(0.89rem, -0.1643rem + 4.6857vw, 1.3rem);
+}
+
+.couple-name {
+  text-align: center;
+  font-size: 4rem;
+  line-height: 80%;
+  font-family: var(--font-dancing-script);
+}
+
+.event-date {
+  margin-top: 48px;
+  margin-bottom: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  font-size: clamp(1rem, 8vw, 3rem);
+  line-height: 100%;
+}
+
+.form-section {
+  text-align: center;
+  padding: 64px 24px;
+  background: #ffffff;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 95%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.assistance {
+  font-size: clamp(3rem, -0.0857rem + 13.7143vw, 4.2rem);
+  text-transform: uppercase;
+}
+.assistance-description {
+  font-size: clamp(1.09rem, 0.0871rem + 4.4571vw, 1.48rem);
+  margin-bottom: 24px;
+}
+
+.parents {
+  font-size: clamp(0.89rem, -0.1643rem + 4.6857vw, 1.3rem);
+  display: flex;
+  justify-content: space-around;
+}
+
+.couple-name {
+  margin-top: 16px;
+  font-size: clamp(3rem, 20vw, 8rem);
+}
+
+.event-day-container {
+  text-align: center;
+}
+
+.honor-to-invite {
+  font-size: clamp(1.18rem, 0.1514rem + 4.5714vw, 1.58rem);
+}

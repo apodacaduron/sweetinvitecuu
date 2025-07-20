@@ -399,7 +399,7 @@ export default function EventForm(props: Props) {
 
                 return (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Template</FormLabel>
+                    <FormLabel>Client</FormLabel>
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>

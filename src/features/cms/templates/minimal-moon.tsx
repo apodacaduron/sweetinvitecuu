@@ -1,16 +1,32 @@
 "use client";
 
+import { Dancing_Script, Old_Standard_TT } from 'next/font/google';
+import { twMerge } from 'tailwind-merge';
+
 import { BlockRenderer } from '@/features/cms/components';
 
-import pageStyles from './style.module.css';
+import pageStyles from './minimal-moon.module.css';
 
 type Props = {
-    blocks: any
-}
+  blocks: any;
+};
+
+const oldStandard = Old_Standard_TT({
+  subsets: ["latin"],
+  weight: ["400", "700"], // ajusta los pesos según necesites
+  style: ['italic', 'normal'],
+  variable: "--font-old-standard",
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-dancing-script",
+});
 
 export default function MinimalMoonTemplate(props: Props) {
   return (
-    <div className='max-w-xl mx-auto whitespace-pre-line'>
+    <div className={twMerge("max-w-3xl mx-auto whitespace-pre-line", `${oldStandard.variable} ${dancingScript.variable}`)}>
       <BlockRenderer pageStyles={pageStyles} blocks={props?.blocks} />
     </div>
   );
