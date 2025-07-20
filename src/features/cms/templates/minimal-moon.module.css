@@ -101,7 +101,8 @@
 }
 
 .church-img, .reception-img {
-  max-width: 60%;
+  max-width: 300px;
+  width: 100%;
   margin: 0 auto 16px auto;
 }
 
@@ -112,4 +113,20 @@
 .gallery {
   height: 70vh;
   width: 100%;
+}
+
+.timeline {
+  margin-top: 64px;
+  margin-bottom: 64px;
+  font-size: clamp(1rem, 5vw, 1.5rem);
+  line-height: 100%;
+  padding: 0 16px
+}
+
+.timeline-img {
+  max-width: 180px;
+  min-width: 80px;
+  max-height: 120px;
+  width: 100%;
+  object-fit: contain;
 }

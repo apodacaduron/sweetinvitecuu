@@ -8,7 +8,7 @@ type LinkProperties = {
   target: string
 }
 
-export default function RowBlock(props: BlockProps<LinkProperties>) {
+export default function LinkBlock(props: BlockProps<LinkProperties>) {
   return (
     <Button asChild>
       <a id={props.id} className={props.pageStyles[props.class]} data-type={props.type} href={props.properties.url} target={props.properties.target ?? '_blank'}>

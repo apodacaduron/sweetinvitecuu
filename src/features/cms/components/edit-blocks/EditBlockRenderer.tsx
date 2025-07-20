@@ -5,10 +5,11 @@ import { CSSProperties } from 'react';
 import GalleryEditBlock from './GalleryEditBlock';
 import GroupEditBlock from './GroupEditBlock';
 import ImageEditBlock from './ImageEditBlock';
-import ItineraryEditBlock from './ItineraryEditBlock';
+import LinkEditBlock from './LinkEditBlock';
 import RowEditBlock from './RowEditBlock';
 import RsvpEditBlock from './RsvpEditBlock';
 import TextEditBlock from './TextEditBlock';
+import TimelineEditBlock from './TimelineEditBlock';
 
 type Props = {
   blocks: any;
@@ -36,13 +37,17 @@ export default function EditBlockRenderer(props: Props) {
             return <GroupEditBlock key={idx} {...nextProps} />;
           case "image":
             return <ImageEditBlock key={idx} {...nextProps} />;
-          case "itinerary":
+          case "timeline":
             return (
-              <ItineraryEditBlock key={idx} {...nextProps} />
+              <TimelineEditBlock key={idx} {...nextProps} />
             );
           case "text":
             return (
               <TextEditBlock key={idx} {...nextProps} />
+            );
+          case "link":
+            return (
+              <LinkEditBlock key={idx} {...nextProps} />
             );
           case "gallery":
             return (

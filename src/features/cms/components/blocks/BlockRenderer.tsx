@@ -5,11 +5,11 @@ import { CSSProperties } from 'react';
 import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
 import ImageBlock from './ImageBlock';
-import ItineraryBlock from './ItineraryBlock';
 import LinkBlock from './LinkBlock';
 import RowBlock from './RowBlock';
 import RsvpBlock from './RsvpBlock';
 import TextBlock from './TextBlock';
+import TimelineBlock from './TimelineBlock';
 
 type Props = {
   blocks: any;
@@ -45,9 +45,9 @@ export default function BlockRenderer(props: Props) {
             return <GroupBlock key={idx} {...nextProps} />;
           case "image":
             return <ImageBlock key={idx} {...nextProps} />;
-          case "itinerary":
+          case "timeline":
             return (
-              <ItineraryBlock key={idx} {...nextProps} />
+              <TimelineBlock key={idx} {...nextProps} />
             );
           case "text":
             return (
