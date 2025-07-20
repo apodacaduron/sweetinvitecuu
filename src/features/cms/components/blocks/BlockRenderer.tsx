@@ -38,7 +38,7 @@ export default function BlockRenderer(props: Props) {
           ...block,
         };
 
-        if (!block.visible) return null
+        if (!block.visible) return null;
 
         switch (block?.type) {
           case "group":
@@ -46,31 +46,23 @@ export default function BlockRenderer(props: Props) {
           case "image":
             return <ImageBlock key={idx} {...nextProps} />;
           case "timeline":
-            return (
-              <TimelineBlock key={idx} {...nextProps} />
-            );
+            return <TimelineBlock key={idx} {...nextProps} />;
           case "text":
-            return (
-              <TextBlock key={idx} {...nextProps} />
-            );
+            return <TextBlock key={idx} {...nextProps} />;
           case "gallery":
-            return (
-              <GalleryBlock key={idx} {...nextProps} />
-            );
+            return <GalleryBlock key={idx} {...nextProps} />;
           case "rsvp":
-            return (
-              <RsvpBlock key={idx} {...nextProps} />
-            );
+            return <RsvpBlock key={idx} {...nextProps} />;
           case "row":
-            return (
-              <RowBlock key={idx} {...nextProps} />
-            );
+            return <RowBlock key={idx} {...nextProps} />;
           case "link":
-            return (
-              <LinkBlock key={idx} {...nextProps} />
-            );
+            return <LinkBlock key={idx} {...nextProps} />;
           default:
-            return <i key={idx}>Block <b>{block?.type}</b> not found please contact us.</i>;
+            return (
+              <i key={idx}>
+                Block <b>{block?.type}</b> not found please contact us.
+              </i>
+            );
         }
       })}
     </>

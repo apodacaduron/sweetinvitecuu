@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import React, { Suspense } from 'react';
 
+import { BlocksProvider } from '@/features/cms/context/BlocksContext';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
 
@@ -10,15 +11,15 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-
 export default function EventPage({ params }: Props) {
-    const {slug} = React.use(params)
-    const eventSlug = slug?.toString()
+  const { slug } = React.use(params);
+  const eventSlug = slug?.toString();
 
   const eventQuery = useQuery({
     queryKey: ["event", { slug: eventSlug }],
     queryFn: async () => {
-      if (!eventSlug) throw new Error("Could not load event, slug not provided");
+      if (!eventSlug)
+        throw new Error("Could not load event, slug not provided");
 
       const query = supabase
         .from("events")
@@ -42,7 +43,9 @@ export default function EventPage({ params }: Props) {
 
   return (
     <Suspense fallback={<div>Loading template...</div>}>
-      <DynamicTemplate blocks={eventQuery.data.blocks} />
+      <BlocksProvider parentData={eventQuery.data} origin="templates">
+        <DynamicTemplate blocks={eventQuery.data.blocks} />
+      </BlocksProvider>
     </Suspense>
   );
 }

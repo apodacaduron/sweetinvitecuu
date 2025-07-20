@@ -16,7 +16,7 @@ import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 
-import { useEditableBlocks } from '../../context/EditableBlocksContext';
+import { useBlocks } from '../../context/BlocksContext';
 import { BlockProps } from './BlockRenderer';
 
 const rsvpSchema = z.object({
@@ -34,7 +34,7 @@ const rsvpSchema = z.object({
 type RsvpSchema = z.infer<typeof rsvpSchema>;
 
 export default function RsvpBlock(props: BlockProps<any>) {
-  const { parentData, origin } = useEditableBlocks()
+  const { parentData, origin } = useBlocks()
 
   const form = useForm<RsvpSchema>({
     resolver: zodResolver(rsvpSchema),
