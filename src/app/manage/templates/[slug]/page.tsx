@@ -89,6 +89,7 @@ export default function Page() {
       editableBlocks={editableBlocks}
       setEditableBlocks={setEditableBlocks}
       parentData={templateQuery.data}
+      origin="templates"
     >
       <SidebarProvider
         style={

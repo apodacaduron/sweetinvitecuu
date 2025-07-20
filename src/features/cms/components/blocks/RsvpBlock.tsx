@@ -16,6 +16,7 @@ import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 
+import { useEditableBlocks } from '../../context/EditableBlocksContext';
 import { BlockProps } from './BlockRenderer';
 
 const rsvpSchema = z.object({
@@ -33,6 +34,8 @@ const rsvpSchema = z.object({
 type RsvpSchema = z.infer<typeof rsvpSchema>;
 
 export default function RsvpBlock(props: BlockProps<any>) {
+  const { parentData, origin } = useEditableBlocks()
+
   const form = useForm<RsvpSchema>({
     resolver: zodResolver(rsvpSchema),
     defaultValues: {
@@ -48,7 +51,8 @@ export default function RsvpBlock(props: BlockProps<any>) {
       const newRsvp = {
         ...data,
         people_count: data.people_count || 0,
-        will_attend: data.will_attend === 'yes'
+        will_attend: data.will_attend === 'yes',
+        event_id: parentData?.id
       }
 
       return supabase.from("rsvps").insert(newRsvp).throwOnError();
@@ -65,6 +69,8 @@ export default function RsvpBlock(props: BlockProps<any>) {
   });
 
   async function onSubmit(data: RsvpSchema) {
+    if (origin === 'templates') return
+
     await createMutation.mutateAsync(data);
   }
 

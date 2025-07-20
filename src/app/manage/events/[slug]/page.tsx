@@ -82,6 +82,7 @@ export default function Page() {
       editableBlocks={editableBlocks}
       setEditableBlocks={setEditableBlocks}
       parentData={eventQuery.data}
+      origin="events"
     >
       <SidebarProvider
         style={

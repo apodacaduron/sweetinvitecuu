@@ -9,6 +9,7 @@ type EditableBlocksContextType = {
   editableBlocks: Block[];
   updateBlock: (updatedBlock: Block) => void;
   setEditableBlocks: React.Dispatch<React.SetStateAction<Json>>
+  origin: 'events' | 'templates'
 };
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
     parentData: EditableBlocksContextType['parentData']
     editableBlocks: EditableBlocksContextType['editableBlocks']
     setEditableBlocks: EditableBlocksContextType['setEditableBlocks']
+    origin: 'events' | 'templates'
 }
 
 const EditableBlocksContext = createContext<EditableBlocksContextType | undefined>(undefined);
