@@ -12,8 +12,7 @@ export type ImageProperties = {
 export default function ImageBlock(props: BlockProps<ImageProperties>) {
   return (
     <img
-      id={props.id}
-      className={props.pageStyles[props.class]}
+      id={props.id} className={props.pageStyles[props.class]} data-type={props.type}
       src={props.properties.file.publicUrl || undefined}
       alt="Hero image"
     />

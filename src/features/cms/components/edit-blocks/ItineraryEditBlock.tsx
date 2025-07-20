@@ -7,6 +7,7 @@ export default function ItineraryBlock(props: EditBlockProps<any>) {
 
   return (
     <EditBlockWrapper isVisible={props.visible}
+    block={props}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}>
       Itinerary
     </EditBlockWrapper>

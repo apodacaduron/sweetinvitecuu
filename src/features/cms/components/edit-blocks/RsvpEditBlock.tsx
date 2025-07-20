@@ -74,6 +74,7 @@ export default function RsvpBlock(props: EditBlockProps<any>) {
 
   return (
     <EditBlockWrapper isVisible={props.visible}
+    block={props}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">

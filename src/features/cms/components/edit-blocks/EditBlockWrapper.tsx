@@ -1,3 +1,4 @@
+import Case from 'case';
 import { Eye, EyeClosed } from 'lucide-react';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -8,6 +9,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { IconDotsVertical } from '@tabler/icons-react';
 
+import { EditBlockProps } from './EditBlockRenderer';
+
 type Props = {
   children: React.ReactNode;
   className?: string
@@ -15,11 +18,13 @@ type Props = {
   insetButton?: boolean
   isVisible: boolean
   onClickVisibility(isVisible: boolean): void
+  block: EditBlockProps<any>
 };
 
 export function EditBlockWrapper(props: Props) {
   return (
     <div className={twMerge("relative", props.className)}>
+      <h4 className='font-semibold text-xl mb-1'>{`${Case.title(props.block.type)}`}</h4>
       <div className={twMerge(props.isVisible ? 'opacity-100' : 'opacity-70 diagonal-lines pointer-events-none', props.childClassName)}>
         {props.children}
       </div>

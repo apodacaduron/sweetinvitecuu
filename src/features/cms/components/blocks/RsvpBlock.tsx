@@ -69,7 +69,7 @@ export default function RsvpBlock(props: BlockProps<any>) {
   }
 
   return (
-    <div className={props.pageStyles[props.class]}>
+    <div id={props.id} className={props.pageStyles[props.class]} data-type={props.type}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
           <FormField

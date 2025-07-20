@@ -6,6 +6,7 @@ import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
 import ImageBlock from './ImageBlock';
 import ItineraryBlock from './ItineraryBlock';
+import LinkBlock from './LinkBlock';
 import RowBlock from './RowBlock';
 import RsvpBlock from './RsvpBlock';
 import TextBlock from './TextBlock';
@@ -63,6 +64,10 @@ export default function BlockRenderer(props: Props) {
           case "row":
             return (
               <RowBlock key={idx} {...nextProps} />
+            );
+          case "link":
+            return (
+              <LinkBlock key={idx} {...nextProps} />
             );
           default:
             return <i key={idx}>Block <b>{block?.type}</b> not found please contact us.</i>;

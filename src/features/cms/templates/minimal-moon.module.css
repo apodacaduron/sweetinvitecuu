@@ -66,7 +66,7 @@
 }
 
 .assistance {
-  font-size: clamp(3rem, -0.0857rem + 13.7143vw, 4.2rem);
+  font-size: clamp(2.5rem, 13vw, 4rem);
   text-transform: uppercase;
 }
 .assistance-description {
@@ -91,4 +91,25 @@
 
 .honor-to-invite {
   font-size: clamp(1.18rem, 0.1514rem + 4.5714vw, 1.58rem);
+}
+
+.church, .reception {
+  text-align: center;
+  font-size: clamp(1rem, 8vw, 2.5rem);
+  line-height: 100%;
+  margin-bottom: 32;
+}
+
+.church-img, .reception-img {
+  max-width: 60%;
+  margin: 0 auto 16px auto;
+}
+
+.church-text, .reception-text {
+  margin-bottom: 16px;
+}
+
+.gallery {
+  height: 70vh;
+  width: 100%;
 }

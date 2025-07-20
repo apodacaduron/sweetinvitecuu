@@ -18,6 +18,7 @@ export type EditBlockProps<T> = {
   properties: T;
   id: string;
   class: string;
+  type: string;
   visible: boolean;
   style?: CSSProperties | undefined;
 };

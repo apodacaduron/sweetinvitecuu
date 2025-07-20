@@ -1,3 +1,4 @@
+import Case from 'case';
 import { useEffect, useRef, useState } from 'react';
 
 import { Label } from '@/components/ui/label';
@@ -52,6 +53,7 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
       insetButton
       isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
+      block={props}
     >
       <Label htmlFor={`${props.id}-file-upload`} className="mb-2 block">
         {image

@@ -1,3 +1,5 @@
+import Case from 'case';
+
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
 import BlockRenderer, { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
@@ -10,6 +12,7 @@ export default function GroupEditBlock(props: EditBlockProps<any>) {
       isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
       childClassName="space-y-4 border-2 border-dashed border-gray-400 rounded-md p-6"
+      block={props}
     >
       <BlockRenderer blocks={props.properties.blocks} />
     </EditBlockWrapper>

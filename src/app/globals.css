@@ -130,3 +130,12 @@
     transparent 8px
   );
 }
+
+.swiper-pagination-bullet {
+  background: var(--color-primary) !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--color-primary) !important;
+}

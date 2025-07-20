@@ -6,7 +6,7 @@ type TextProperties = {
 
 export default function TextBlock(props: BlockProps<TextProperties>) {
   return (
-    <div className={props.pageStyles[props.class]}>
+    <div id={props.id} className={props.pageStyles[props.class]} data-type={props.type}>
       {props.properties.content}
     </div>
   );

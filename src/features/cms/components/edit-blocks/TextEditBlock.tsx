@@ -27,6 +27,7 @@ export default function TextEditBlock(props: EditBlockProps<TextProperties>) {
     <EditBlockWrapper
       className="w-full"
       insetButton
+      block={props}
       isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
