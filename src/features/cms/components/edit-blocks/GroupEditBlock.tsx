@@ -1,7 +1,5 @@
-import Case from 'case';
-
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import BlockRenderer, { EditBlockProps } from './EditBlockRenderer';
+import EditBlockRenderer, { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
 export default function GroupEditBlock(props: EditBlockProps<any>) {
@@ -14,7 +12,7 @@ export default function GroupEditBlock(props: EditBlockProps<any>) {
       childClassName="space-y-4 border-2 border-dashed border-gray-400 rounded-md p-6"
       block={props}
     >
-      <BlockRenderer blocks={props.properties.blocks} />
+      <EditBlockRenderer blocks={props.properties.blocks} />
     </EditBlockWrapper>
   );
 }

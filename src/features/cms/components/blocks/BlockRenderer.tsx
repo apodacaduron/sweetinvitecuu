@@ -6,6 +6,7 @@ import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
 import ImageBlock from './ImageBlock';
 import LinkBlock from './LinkBlock';
+import CircleOverlayBlock from './overlay-blocks/CircleOverlayBlock';
 import RowBlock from './RowBlock';
 import RsvpBlock from './RsvpBlock';
 import TextBlock from './TextBlock';
@@ -57,6 +58,8 @@ export default function BlockRenderer(props: Props) {
             return <RowBlock key={idx} {...nextProps} />;
           case "link":
             return <LinkBlock key={idx} {...nextProps} />;
+          case "circle-overlay":
+            return <CircleOverlayBlock key={idx} {...nextProps} />;
           default:
             return (
               <i key={idx}>

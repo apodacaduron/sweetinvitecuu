@@ -26,7 +26,7 @@ export default function GalleryBlock(props: BlockProps<GalleryProperties>) {
       >
         {props.properties.images.map((image, index) => (
           <SwiperSlide key={index}>
-            <img src={image.publicUrl} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
+            <img src={image.publicUrl} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" loading="eager" />
           </SwiperSlide>
         ))}
       </Swiper>

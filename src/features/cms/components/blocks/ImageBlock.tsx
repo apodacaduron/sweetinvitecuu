@@ -14,7 +14,8 @@ export default function ImageBlock(props: BlockProps<ImageProperties>) {
     <img
       id={props.id} className={props.pageStyles[props.class]} data-type={props.type}
       src={props.properties.file.publicUrl || undefined}
-      alt="Hero image"
+      alt="Image"
+      loading="eager"
     />
   );
 }

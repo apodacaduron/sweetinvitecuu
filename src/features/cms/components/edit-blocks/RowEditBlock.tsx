@@ -1,5 +1,5 @@
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import BlockRenderer, { EditBlockProps } from './EditBlockRenderer';
+import EditBlockRenderer, { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
 export default function RowEditBlock(props: EditBlockProps<any>) {
@@ -12,7 +12,7 @@ export default function RowEditBlock(props: EditBlockProps<any>) {
       block={props}
       childClassName="flex gap-4 border-2 border-dashed border-gray-400 rounded-md p-6"
     >
-      <BlockRenderer blocks={props.properties.blocks} />
+      <EditBlockRenderer blocks={props.properties.blocks} />
     </EditBlockWrapper>
   );
 }
