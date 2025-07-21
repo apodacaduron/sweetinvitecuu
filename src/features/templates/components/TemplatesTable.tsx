@@ -15,12 +15,9 @@ import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-export type Template = {
-  id: string;
-  name: string | null;
-  slug: string | null;
-  created_at: string;
-};
+import { Tables } from '../../../../database.types';
+
+export type Template = Tables<'templates'>;
 
 type Props = {
   onOpenPreview: (item: Template) => void;

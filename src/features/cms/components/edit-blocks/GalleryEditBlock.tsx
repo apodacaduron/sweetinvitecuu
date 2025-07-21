@@ -11,7 +11,7 @@ import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
 export default function GalleryEditBlock(props: EditBlockProps<any>) {
-  const { updateBlock, parentData } = useEditableBlocks();
+  const { updateBlock, parentData, origin } = useEditableBlocks();
   const inputFileRef = useRef<HTMLInputElement>(null);
   const images = props.properties?.images ?? [];
 
@@ -29,6 +29,7 @@ export default function GalleryEditBlock(props: EditBlockProps<any>) {
   };
 
   const { handleFile } = useFileUploader({
+    origin,
     foldername: parentData?.id ?? '',
     filename: props.id,
     onUpdate(fileResponse) {
@@ -36,6 +37,7 @@ export default function GalleryEditBlock(props: EditBlockProps<any>) {
       updateImages(updated);
     },
     bucket: 'media',
+    ...(origin === 'events' ? { eventId: parentData?.id } : { templateId: parentData?.id })
   });
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

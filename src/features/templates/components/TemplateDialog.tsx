@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2Icon } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -12,6 +12,7 @@ import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useFileUploader } from '@/hooks/useFileUploader';
 import { slugify } from '@/lib/helpers';
 import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,6 +24,11 @@ import { Template } from './TemplatesTable';
 const templateSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   slug: z.string().min(1, { message: "Slug is required" }),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  seoImage: z.string().url().optional(),
+  bgMusicUrl: z.string().url().optional(),
+  themeColor: z.string().optional(),
 });
 
 type TemplateSchema = z.infer<typeof templateSchema>;
@@ -42,12 +48,46 @@ export default function TemplateForm(props: Props) {
     defaultValues: {
       name: props.item?.name ?? "",
       slug: props.item?.slug ?? "",
+      seoTitle: props.item?.seo_title ?? "",
+      seoDescription: props.item?.seo_description ?? "",
+      seoImage: props.item?.og_image_url ?? "",
+      bgMusicUrl: props.item?.music_url ?? "",
+      themeColor: props.item?.theme_color ?? "#000000",
     },
   });
-  const nameValue = form.watch('name'); // 🔁 Reactively watch "name"
+  const nameValue = form.watch("name");
+
+  // File uploaders for SEO Image and Background Music
+  const seoImageUploader = useFileUploader({
+    origin: "templates",
+    foldername: props.item?.id ?? "",
+    filename: `seo-image`,
+    bucket: "media",
+    onUpdate: ({ publicUrl }) => {
+      form.setValue("seoImage", publicUrl);
+      toast.success("SEO image uploaded!");
+    },
+    ...(origin === "events"
+      ? { eventId: props.item?.id }
+      : { templateId: props.item?.id }),
+  });
+
+  const bgMusicUploader = useFileUploader({
+    origin: "templates",
+    foldername: props.item?.id ?? "",
+    filename: `background-music`,
+    bucket: "media",
+    onUpdate: ({ publicUrl }) => {
+      form.setValue("bgMusicUrl", publicUrl);
+      toast.success("Background music uploaded!");
+    },
+    ...(origin === "events"
+      ? { eventId: props.item?.id }
+      : { templateId: props.item?.id }),
+  });
 
   const createMutation = useMutation({
-    mutationFn: async (data: TemplateSchema) => {
+    mutationFn: async (data: any) => {
       return supabase.from("templates").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
@@ -68,7 +108,7 @@ export default function TemplateForm(props: Props) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: TemplateSchema) => {
+    mutationFn: async (data: any) => {
       if (!props.item?.id)
         throw new Error("Could not update template, id was not provided");
 
@@ -94,10 +134,21 @@ export default function TemplateForm(props: Props) {
   async function onSubmit(data: TemplateSchema) {
     const isUpdating = Boolean(props.item?.id);
 
+    // Map form fields to DB column names
+    const payload = {
+      name: data.name,
+      slug: data.slug,
+      seo_title: data.seoTitle ?? null,
+      seo_description: data.seoDescription ?? null,
+      og_image_url: data.seoImage ?? null,
+      music_url: data.bgMusicUrl ?? null,
+      theme_color: data.themeColor ?? null,
+    };
+
     if (isUpdating) {
-      await updateMutation.mutateAsync(data);
+      await updateMutation.mutateAsync(payload);
     } else {
-      await createMutation.mutateAsync(data);
+      await createMutation.mutateAsync(payload);
     }
   }
 
@@ -105,11 +156,16 @@ export default function TemplateForm(props: Props) {
     form.reset({
       name: props.item?.name ?? "",
       slug: props.item?.slug ?? "",
+      seoTitle: props.item?.seo_title ?? "",
+      seoDescription: props.item?.seo_description ?? "",
+      seoImage: props.item?.og_image_url ?? "",
+      bgMusicUrl: props.item?.music_url ?? "",
+      themeColor: props.item?.theme_color ?? "#000000",
     });
   }, [props.item, form]);
-  
+
   useEffect(() => {
-    form.setValue('slug', slugify(nameValue))
+    form.setValue("slug", slugify(nameValue));
   }, [nameValue]);
 
   return (
@@ -152,6 +208,69 @@ export default function TemplateForm(props: Props) {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="themeColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Theme Color</FormLabel>
+                  <FormControl>
+                    <Input type="color" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* SEO fields */}
+            <FormField
+              control={form.control}
+              name="seoTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Social Share Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter share title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="seoDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Social Share Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter share description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormItem>
+              <FormLabel>Social Share Image URL</FormLabel>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={seoImageUploader.handleFileChange}
+                className="mt-1"
+              />
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Background Music URL</FormLabel>
+              <Input
+                type="file"
+                accept="audio/*"
+                onChange={bgMusicUploader.handleFileChange}
+                className="mt-1"
+              />
+            </FormItem>
 
             <Button
               type="submit"

@@ -109,31 +109,40 @@ export type Database = {
       }
       media: {
         Row: {
+          bucket: string | null
           created_at: string
           event_id: string | null
+          fileName: string | null
+          filePath: string | null
           id: string
+          publicUrl: string | null
           template_id: string | null
           type: string | null
           uploaded_by: string | null
-          url: string | null
         }
         Insert: {
+          bucket?: string | null
           created_at?: string
           event_id?: string | null
+          fileName?: string | null
+          filePath?: string | null
           id?: string
+          publicUrl?: string | null
           template_id?: string | null
           type?: string | null
           uploaded_by?: string | null
-          url?: string | null
         }
         Update: {
+          bucket?: string | null
           created_at?: string
           event_id?: string | null
+          fileName?: string | null
+          filePath?: string | null
           id?: string
+          publicUrl?: string | null
           template_id?: string | null
           type?: string | null
           uploaded_by?: string | null
-          url?: string | null
         }
         Relationships: [
           {

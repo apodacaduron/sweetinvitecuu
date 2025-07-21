@@ -34,7 +34,7 @@ export default function TemplatePage({ params }: Props) {
     enabled: Boolean(templateSlug),
   });
 
-  if (templateQuery.isLoading) return <p>Loading :)...</p>;
+  if (templateQuery.isLoading) return <p>Loading...</p>;
   if (templateQuery.error) return <p>Error loading template</p>;
   if (!templateQuery.data?.blocks) return <p>Loading blocks</p>;
 

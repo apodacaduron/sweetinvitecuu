@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useBlocks } from '@/features/cms/context/BlocksContext';
 
 import { BlockProps } from '../BlockRenderer';
 
 export default function CircleOverlayBlock(props: BlockProps<any>) {
+  const { parentData } = useBlocks()
   const [isZoomed, setIsZoomed] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -24,6 +26,11 @@ export default function CircleOverlayBlock(props: BlockProps<any>) {
   const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsZoomed(true);
+
+    if (parentData?.music_url) {
+      const audio = new Audio(parentData?.music_url);
+      audio.play();
+    }
   };
 
   if (!overlayVisible) return null
@@ -33,9 +40,6 @@ export default function CircleOverlayBlock(props: BlockProps<any>) {
       ref={overlayRef}
       className={`circle-overlay-block ${isZoomed ? 'zoomed' : ''}`}
       onTransitionEnd={onTransitionEnd}
-      onClick={() => {
-        if (!isZoomed) setIsZoomed(true);
-      }}
     >
       <Button
         size="lg"

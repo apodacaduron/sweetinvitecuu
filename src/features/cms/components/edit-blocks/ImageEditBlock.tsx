@@ -9,11 +9,12 @@ import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
 export default function ImageEditBlock(props: EditBlockProps<any>) {
-  const { updateBlock, parentData } = useEditableBlocks();
+  const { updateBlock, parentData, origin } = useEditableBlocks();
   const [image, setImage] = useState(props.properties.file.publicUrl || "");
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const { handleFileChange, handleFile } = useFileUploader({
+    origin,
     foldername: parentData?.id ?? "",
     filename: props.id,
     onUpdate(fileResponse) {
@@ -24,6 +25,7 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
       });
     },
     bucket: "media",
+    ...(origin === 'events' ? { eventId: parentData?.id } : { templateId: parentData?.id })
   });
 
   useEffect(() => {

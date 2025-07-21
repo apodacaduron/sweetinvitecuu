@@ -131,7 +131,7 @@ function DraggableTimelineItem({
 }
 
 function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>) {
-  const { updateBlock, parentData } = useEditableBlocks();
+  const { updateBlock, parentData, origin } = useEditableBlocks();
   const [items, setItems] = useState<TimelineItem[]>(props.properties.items ?? []);
 
   const syncToContext = (newItems: TimelineItem[]) => {
@@ -164,6 +164,7 @@ function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>
 
   const handleImageUpload = (index: number, file: File) => {
     useFileUploader({
+      origin,
       foldername: parentData?.id ?? '',
       filename: `${props.id}-${index}`,
       onUpdate: (fileResponse) => {
@@ -172,6 +173,7 @@ function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>
         syncToContext(updated);
       },
       bucket: 'media',
+      ...(origin === 'events' ? { eventId: parentData?.id } : { templateId: parentData?.id })
     }).handleFile(file);
   };
 
