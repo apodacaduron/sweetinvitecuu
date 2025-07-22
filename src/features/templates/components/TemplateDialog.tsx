@@ -26,8 +26,8 @@ const templateSchema = z.object({
   slug: z.string().min(1, { message: "Slug is required" }),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
-  seoImage: z.string().url().optional(),
-  bgMusicUrl: z.string().url().optional(),
+  seoImage: z.url().optional(),
+  bgMusicUrl: z.url().optional(),
   themeColor: z.string().optional(),
 });
 
@@ -253,7 +253,14 @@ export default function TemplateForm(props: Props) {
             />
 
             <FormItem>
-              <FormLabel>Social Share Image URL</FormLabel>
+              <FormLabel>
+                Social Share Image
+                {form.watch("seoImage") && (
+                  <span className="ml-2 text-xs text-green-600">
+                    (Image already selected)
+                  </span>
+                )}
+              </FormLabel>
               <Input
                 type="file"
                 accept="image/*"
@@ -263,7 +270,14 @@ export default function TemplateForm(props: Props) {
             </FormItem>
 
             <FormItem>
-              <FormLabel>Background Music URL</FormLabel>
+              <FormLabel>
+                Background Music
+                {form.watch("bgMusicUrl") && (
+                  <span className="ml-2 text-xs text-green-600">
+                    (Song already selected)
+                  </span>
+                )}
+              </FormLabel>
               <Input
                 type="file"
                 accept="audio/*"

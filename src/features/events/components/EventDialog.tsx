@@ -19,9 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
+import { useFileUploader } from '@/hooks/useFileUploader';
 import { slugify } from '@/lib/helpers';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
@@ -37,6 +35,11 @@ const eventSchema = z.object({
   event_date: z.date({ error: "Event date is required" }),
   template_id: z.uuidv4(),
   client_id: z.uuidv4(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  seoImage: z.url().optional(),
+  bgMusicUrl: z.url().optional(),
+  themeColor: z.string().optional(),
 });
 
 type EventSchema = z.infer<typeof eventSchema>;
@@ -61,25 +64,46 @@ export default function EventForm(props: Props) {
         : new Date(),
       template_id: props.item?.template_id ?? "",
       client_id: props.item?.client_id ?? "",
+      seoTitle: props.item?.seo_title ?? "",
+      seoDescription: props.item?.seo_description ?? "",
+      seoImage: props.item?.og_image_url ?? "",
+      bgMusicUrl: props.item?.music_url ?? "",
+      themeColor: props.item?.theme_color ?? "#000000",
     },
   });
   const nameValue = form.watch("title"); // 🔁 Reactively watch "name"
 
-  // const templatesQuery = useQuery({
-  //   queryKey: ["select-template"],
-  //   queryFn: async () => {
-  //     const query = supabase
-  //       .from("templates")
-  //       .select("*")
-  //       .order("created_at", { ascending: false });
+  // File uploaders for SEO Image and Background Music
+  const seoImageUploader = useFileUploader({
+    origin: "events",
+    foldername: props.item?.id ?? "",
+    filename: `seo-image`,
+    bucket: "media",
+    onUpdate: ({ publicUrl }) => {
+      form.setValue("seoImage", publicUrl);
+      toast.success("SEO image uploaded!");
+    },
+    ...(origin === "events"
+      ? { eventId: props.item?.id }
+      : { templateId: props.item?.id }),
+  });
 
-  //     const { data } = await query;
-  //     return data ?? [];
-  //   },
-  // });
+  const bgMusicUploader = useFileUploader({
+    origin: "events",
+    foldername: props.item?.id ?? "",
+    filename: `background-music`,
+    bucket: "media",
+    onUpdate: ({ publicUrl }) => {
+      form.setValue("bgMusicUrl", publicUrl);
+      toast.success("Background music uploaded!");
+    },
+    ...(origin === "events"
+      ? { eventId: props.item?.id }
+      : { templateId: props.item?.id }),
+  });
 
   const createMutation = useMutation({
-    mutationFn: async (data: EventSchema) => {
+    mutationFn: async (data: any) => {
       const payload = {
         ...data,
         event_date: data.event_date.toISOString(),
@@ -105,7 +129,7 @@ export default function EventForm(props: Props) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: EventSchema) => {
+    mutationFn: async (data: any) => {
       if (!props.item?.id)
         throw new Error("Could not update event, id was not provided");
 
@@ -136,10 +160,21 @@ export default function EventForm(props: Props) {
   async function onSubmit(data: EventSchema) {
     const isUpdating = Boolean(props.item?.id);
 
+    // Map form fields to DB column names
+    const payload = {
+      ...data,
+      event_date: data.event_date.toISOString(),
+      seo_title: data.seoTitle ?? null,
+      seo_description: data.seoDescription ?? null,
+      og_image_url: data.seoImage ?? null,
+      music_url: data.bgMusicUrl ?? null,
+      theme_color: data.themeColor ?? null,
+    };
+
     if (isUpdating) {
-      await updateMutation.mutateAsync(data);
+      await updateMutation.mutateAsync(payload);
     } else {
-      await createMutation.mutateAsync(data);
+      await createMutation.mutateAsync(payload);
     }
   }
 
@@ -286,7 +321,7 @@ export default function EventForm(props: Props) {
 
             <FormField
               control={form.control}
-              name="client_id"
+              name="template_id"
               render={({ field }) => {
                 const [open, setOpen] = React.useState(false);
                 const [search, setSearch] = React.useState("");
@@ -430,7 +465,7 @@ export default function EventForm(props: Props) {
                               {clientsQuery.data?.map((client) => (
                                 <CommandItem
                                   key={client.id}
-                                  value={client.name ?? ''}
+                                  value={client.name ?? ""}
                                   onSelect={() => {
                                     form.setValue("client_id", client.id);
                                     setOpen(false);
@@ -457,6 +492,83 @@ export default function EventForm(props: Props) {
                 );
               }}
             />
+
+            <FormField
+              control={form.control}
+              name="themeColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Theme Color</FormLabel>
+                  <FormControl>
+                    <Input type="color" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* SEO fields */}
+            <FormField
+              control={form.control}
+              name="seoTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Social Share Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter share title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="seoDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Social Share Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter share description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormItem>
+              <FormLabel>
+                Social Share Image
+                {form.watch("seoImage") && (
+                  <span className="ml-2 text-xs text-green-600">
+                    (Image already selected)
+                  </span>
+                )}
+              </FormLabel>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={seoImageUploader.handleFileChange}
+                className="mt-1"
+              />
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>
+                Background Music
+                {form.watch("bgMusicUrl") && (
+                  <span className="ml-2 text-xs text-green-600">
+                    (Song already selected)
+                  </span>
+                )}
+              </FormLabel>
+              <Input
+                type="file"
+                accept="audio/*"
+                onChange={bgMusicUploader.handleFileChange}
+                className="mt-1"
+              />
+            </FormItem>
 
             <Button
               type="submit"
