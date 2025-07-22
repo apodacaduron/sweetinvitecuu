@@ -2,6 +2,7 @@
 
 import { CSSProperties } from 'react';
 
+import CountdownBlock from './CountdownBlock';
 import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
 import ImageBlock from './ImageBlock';
@@ -60,6 +61,8 @@ export default function BlockRenderer(props: Props) {
             return <LinkBlock key={idx} {...nextProps} />;
           case "circle-overlay":
             return <CircleOverlayBlock key={idx} {...nextProps} />;
+          case "countdown":
+            return <CountdownBlock key={idx} {...nextProps} />;
           default:
             return (
               <i key={idx}>
