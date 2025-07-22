@@ -148,8 +148,8 @@
   width: 100%;
   --size: 250px;
 
-  mask: radial-gradient(circle var(--size) at center 45%, transparent 0, transparent calc(var(--size)), black calc(var(--size) + 1px));
-  -webkit-mask: radial-gradient(circle var(--size) at center 45%, transparent 0, transparent calc(var(--size)), black calc(var(--size) + 1px));
+  mask: radial-gradient(circle var(--size) at center 40%, transparent 0, transparent calc(var(--size)), black calc(var(--size) + 1px));
+  -webkit-mask: radial-gradient(circle var(--size) at center 40%, transparent 0, transparent calc(var(--size)), black calc(var(--size) + 1px));
 
   transform-origin: center center;
   transform: scale(1);
@@ -159,6 +159,11 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+}
+
+.circle-overlay-block > * {
+  position: absolute;
+  bottom: 300px;
 }
 
 .circle-overlay-block.zoomed {

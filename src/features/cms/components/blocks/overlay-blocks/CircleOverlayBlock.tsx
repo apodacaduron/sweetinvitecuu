@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { useBlocks } from '@/features/cms/context/BlocksContext';
 
-import { BlockProps } from '../BlockRenderer';
+import BlockRenderer, { BlockProps } from '../BlockRenderer';
 
 export default function CircleOverlayBlock(props: BlockProps<any>) {
   const { parentData } = useBlocks()
@@ -40,14 +39,9 @@ export default function CircleOverlayBlock(props: BlockProps<any>) {
       ref={overlayRef}
       className={`circle-overlay-block ${isZoomed ? 'zoomed' : ''}`}
       onTransitionEnd={onTransitionEnd}
+      onClick={handleButtonClick}
     >
-      <Button
-        size="lg"
-        className={`absolute left-1/2 transform -translate-x-1/2 bottom-30 text-xl p-6 z-10 transition-opacity duration-700 ${isZoomed ? 'opacity-0' : 'opacity-100'}`}
-        onClick={handleButtonClick}
-      >
-        Abrir invitación
-      </Button>
+      <BlockRenderer pageStyles={props.pageStyles} blocks={props.properties.blocks} />
     </div>
   );
 }

@@ -20,7 +20,7 @@
   text-transform: uppercase;
   text-align: center;
   font-size: clamp(1.18rem, 0.1514rem + 4.5714vw, 1.58rem);
-  padding: 0 16px
+  padding: 0 16px;
 }
 
 .invitation-container {
@@ -93,20 +93,23 @@
   font-size: clamp(1.18rem, 0.1514rem + 4.5714vw, 1.58rem);
 }
 
-.church, .reception {
+.church,
+.reception {
   text-align: center;
   font-size: clamp(1rem, 8vw, 2.5rem);
   line-height: 100%;
   margin-bottom: 32;
 }
 
-.church-img, .reception-img {
+.church-img,
+.reception-img {
   max-width: 300px;
   width: 100%;
   margin: 0 auto 16px auto;
 }
 
-.church-text, .reception-text {
+.church-text,
+.reception-text {
   margin-bottom: 16px;
 }
 
@@ -120,7 +123,7 @@
   margin-bottom: 64px;
   font-size: clamp(1rem, 5vw, 1.5rem);
   line-height: 100%;
-  padding: 0 16px
+  padding: 0 16px;
 }
 
 .timeline-img {
@@ -129,4 +132,12 @@
   max-height: 120px;
   width: 100%;
   object-fit: contain;
+}
+
+.liz-y-alejandro-overlay {
+  text-align: center;
+  font-size: clamp(3rem, 20vw, 4rem);
+  line-height: 80%;
+  font-family: var(--font-dancing-script);
+  bottom: 10vh !important;
 }
