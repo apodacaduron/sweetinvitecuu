@@ -43,7 +43,7 @@ export default function Page() {
         .eq("id", templateId)
         .throwOnError();
     },
-    async onSuccess(_) {
+    async onSuccess() {
       await queryClient.invalidateQueries({
         queryKey: ["template", { id: templateId }],
       });

@@ -37,7 +37,7 @@ export default function Page() {
         .eq("id", eventId)
         .throwOnError();
     },
-    async onSuccess(_) {
+    async onSuccess() {
       await queryClient.invalidateQueries({
         queryKey: ["event", { id: eventId }],
       });

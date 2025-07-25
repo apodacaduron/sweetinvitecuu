@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2Icon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -87,7 +87,7 @@ export default function TemplateForm(props: Props) {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Omit<Template, 'blocks' | 'id' | 'created_at' | 'search'>) => {
       return supabase.from("templates").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
@@ -108,7 +108,7 @@ export default function TemplateForm(props: Props) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Partial<Template>) => {
       if (!props.item?.id)
         throw new Error("Could not update template, id was not provided");
 
@@ -135,7 +135,7 @@ export default function TemplateForm(props: Props) {
     const isUpdating = Boolean(props.item?.id);
 
     // Map form fields to DB column names
-    const payload = {
+    const payload: Omit<Template, 'blocks' | 'id' | 'created_at' | 'search'> = {
       name: data.name,
       slug: data.slug,
       seo_title: data.seoTitle ?? null,

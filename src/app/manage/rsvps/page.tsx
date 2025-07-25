@@ -1,9 +1,5 @@
-import { PlusIcon } from 'lucide-react';
-
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { RSVPsTable } from '@/features/rsvps';
 
