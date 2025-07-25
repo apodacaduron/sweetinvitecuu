@@ -50,7 +50,6 @@ export default function LinkEditBlock(props: EditBlockProps<LinkProperties>) {
       className="w-full"
       insetButton
       block={props}
-      isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
       <div className={props.visible ? '' : 'opacity-70 diagonal-lines pointer-events-none relative'}>

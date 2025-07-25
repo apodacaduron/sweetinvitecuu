@@ -7,7 +7,6 @@ export default function RowEditBlock(props: EditBlockProps<any>) {
 
   return (
     <EditBlockWrapper
-      isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
       block={props}
       childClassName="flex gap-4 border-2 border-dashed border-gray-400 rounded-md p-6"

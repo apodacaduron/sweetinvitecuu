@@ -16,7 +16,6 @@ export default function RsvpBlock(props: EditBlockProps<any>) {
 
   return (
     <EditBlockWrapper
-      isVisible={props.visible}
       block={props}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >

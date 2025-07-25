@@ -180,7 +180,6 @@ function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>
   return (
     <EditBlockWrapper
       insetButton
-      isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
       block={props}
     >

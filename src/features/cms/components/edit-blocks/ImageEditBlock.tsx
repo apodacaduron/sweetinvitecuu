@@ -53,7 +53,6 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
   return (
     <EditBlockWrapper
       insetButton
-      isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
       block={props}
     >

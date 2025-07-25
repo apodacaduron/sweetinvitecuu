@@ -28,7 +28,6 @@ export default function TextEditBlock(props: EditBlockProps<TextProperties>) {
       className="w-full"
       insetButton
       block={props}
-      isVisible={props.visible}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
       <div

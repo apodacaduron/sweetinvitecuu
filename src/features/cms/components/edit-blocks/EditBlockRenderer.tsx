@@ -21,6 +21,7 @@ export type EditBlockProps<T> = {
   class: string;
   type: string;
   visible: boolean;
+  original: boolean;
   style?: CSSProperties | undefined;
 };
 
