@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { IconDotsVertical } from '@tabler/icons-react';
 
-import { Block } from '../../context/BlocksContext';
+import { Block, blockTypesWithIcons } from '../../context/BlocksContext';
 
 type Props = {
   children: React.ReactNode;
@@ -77,10 +77,8 @@ export function EditBlockWrapper(props: Props) {
             Add new block
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Text</DropdownMenuItem>
-          <DropdownMenuItem>Image</DropdownMenuItem>
-          <DropdownMenuItem>Countdown</DropdownMenuItem>
+        <DropdownMenuContent align="end" className="w-40">
+          {blockTypesWithIcons.map(block => <DropdownMenuItem><block.icon />{block.label}</DropdownMenuItem>)}
         </DropdownMenuContent>
       </DropdownMenu>
 

@@ -1,3 +1,7 @@
+import {
+    Circle, Columns, GalleryHorizontal, Hourglass, Image, LayoutList, Link, LucideIcon, MailPlus,
+    Rows, Text
+} from 'lucide-react';
 import React, { createContext, ReactNode, useContext } from 'react';
 
 import { Tables } from '../../../../database.types';
@@ -101,6 +105,65 @@ export const blocksMap = {
   }),
   rsvp: buildBlock("rsvp", null),
 } satisfies Record<keyof BlockDefinition, Block>;
+
+export type BlockTypeWithIcon = {
+  type: BlockType;
+  label: string;
+  icon: LucideIcon;
+};
+
+export const blockTypesWithIcons: BlockTypeWithIcon[] = [
+  {
+    type: "circle-overlay",
+    label: "Circle Overlay",
+    icon: Circle,
+  },
+  {
+    type: "text",
+    label: "Text",
+    icon: Text,
+  },
+  {
+    type: "group",
+    label: "Group",
+    icon: Rows,
+  },
+  {
+    type: "row",
+    label: "Row",
+    icon: Columns,
+  },
+  {
+    type: "image",
+    label: "Image",
+    icon: Image,
+  },
+  {
+    type: "link",
+    label: "Link",
+    icon: Link,
+  },
+  {
+    type: "timeline",
+    label: "Timeline",
+    icon: LayoutList,
+  },
+  {
+    type: "countdown",
+    label: "Countdown",
+    icon: Hourglass,
+  },
+  {
+    type: "gallery",
+    label: "Gallery",
+    icon: GalleryHorizontal,
+  },
+  {
+    type: "rsvp",
+    label: "RSVP",
+    icon: MailPlus,
+  },
+];
 
 export type Block = {
   [K in keyof BlockDefinition]: BlockBase<BlockDefinition[K]> & { type: K }
