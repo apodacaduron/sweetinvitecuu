@@ -15,13 +15,9 @@ import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-export type Client = {
-  id: string;
-  name: string | null;
-  email: string | null;
-  phone: string | null;
-  created_at: string;
-};
+import { Tables } from '../../../../database.types';
+
+export type Client = Tables<'clients'>
 
 type Props = {
   onEdit: (client: Client) => void;

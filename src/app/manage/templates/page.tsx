@@ -51,11 +51,11 @@ export default function Page() {
     }
   }
 
-  function openEditor(item) {
+  function openEditor(item: Template) {
     router.push(`/manage/templates/${item.id}`);
   }
 
-  function openPreview(item) {
+  function openPreview(item: Template) {
     window.open(`${window.location.origin}/templates/${item.slug}`);
   }
 

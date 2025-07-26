@@ -13,13 +13,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import EditBlockRenderer from '@/features/cms/components/edit-blocks/EditBlockRenderer';
+import { Block } from '@/features/cms/context/BlocksContext';
 import { EditableBlocksProvider } from '@/features/cms/context/EditableBlocksContext';
 import { JsonEditor } from '@/features/templates/components/JsonEditor';
 import { supabase } from '@/lib/supabase';
 import { IconDotsVertical } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { Tables } from '../../../../../database.types';
+import { Json } from '../../../../../database.types';
 
 export default function Page() {
   const params = useParams();
@@ -27,7 +28,7 @@ export default function Page() {
 
   const queryClient = useQueryClient();
   const [editorType, setEditorType] = useState<"ui" | "json">("ui");
-  const [editableBlocks, setEditableBlocks] = useState<Tables<'templates'>['blocks']>([]);
+  const [editableBlocks, setEditableBlocks] = useState<Block[]>([]);
   const [previewUrl, setPreviewUrl] = useState("");
 
   const saveBlocksMutation = useMutation({
@@ -38,7 +39,7 @@ export default function Page() {
       return supabase
         .from("templates")
         .update({
-          blocks: editableBlocks,
+          blocks: editableBlocks as unknown as Json,
         })
         .eq("id", templateId)
         .throwOnError();
@@ -77,7 +78,7 @@ export default function Page() {
   // 3. Cuando la data llegue, actualizar el estado local para editar
   useEffect(() => {
     if (templateQuery.data?.blocks) {
-      setEditableBlocks(templateQuery.data.blocks);
+      setEditableBlocks(templateQuery.data.blocks as unknown as Block[]);
       setPreviewUrl(
         `${window.location.origin}/templates/${templateQuery.data?.slug}`
       );

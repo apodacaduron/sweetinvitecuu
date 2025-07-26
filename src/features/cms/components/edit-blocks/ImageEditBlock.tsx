@@ -1,14 +1,13 @@
-import Case from 'case';
 import { useEffect, useRef, useState } from 'react';
 
 import { Label } from '@/components/ui/label';
 import { useFileUploader } from '@/hooks/useFileUploader';
 
+import { Block, BlockBase, ImageProperties } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
-export default function ImageEditBlock(props: EditBlockProps<any>) {
+export default function ImageEditBlock(props: BlockBase<ImageProperties> & { type: "image" }) {
   const { updateBlock, parentData, origin } = useEditableBlocks();
   const [image, setImage] = useState(props.properties.file.publicUrl || "");
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -25,7 +24,7 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
       });
     },
     bucket: "media",
-    ...(origin === 'events' ? { eventId: parentData?.id } : { templateId: parentData?.id })
+    ...(origin === 'events' ? { eventId: parentData?.id || null } : { templateId: parentData?.id || null })
   });
 
   useEffect(() => {
@@ -54,7 +53,7 @@ export default function ImageEditBlock(props: EditBlockProps<any>) {
     <EditBlockWrapper
       insetButton
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
-      block={props}
+      block={props as Block}
     >
       <Label htmlFor={`${props.id}-file-upload`} className="mb-2 block">
         {image

@@ -1,7 +1,6 @@
 "use client";
 
-import { CSSProperties } from 'react';
-
+import { Block } from '../../context/BlocksContext';
 import CountdownBlock from './CountdownBlock';
 import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
@@ -14,18 +13,7 @@ import TextBlock from './TextBlock';
 import TimelineBlock from './TimelineBlock';
 
 type Props = {
-  blocks: any;
-  pageStyles: {
-    readonly [key: string]: string;
-  };
-};
-
-export type BlockProps<T> = {
-  properties: T;
-  id?: string;
-  class: string;
-  type: string;
-  style?: CSSProperties | undefined;
+  blocks: Block[];
   pageStyles: {
     readonly [key: string]: string;
   };
@@ -34,39 +22,34 @@ export type BlockProps<T> = {
 export default function BlockRenderer(props: Props) {
   return (
     <>
-      {props.blocks?.map((block: any, idx: number) => {
-        const nextProps = {
-          pageStyles: props.pageStyles,
-          ...block,
-        };
-
+      {props.blocks?.map((block, idx) => {
         if (!block.visible) return null;
 
         switch (block?.type) {
           case "group":
-            return <GroupBlock key={idx} {...nextProps} />;
+            return <GroupBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "image":
-            return <ImageBlock key={idx} {...nextProps} />;
+            return <ImageBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "timeline":
-            return <TimelineBlock key={idx} {...nextProps} />;
+            return <TimelineBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "text":
-            return <TextBlock key={idx} {...nextProps} />;
+            return <TextBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "gallery":
-            return <GalleryBlock key={idx} {...nextProps} />;
+            return <GalleryBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "rsvp":
-            return <RsvpBlock key={idx} {...nextProps} />;
+            return <RsvpBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "row":
-            return <RowBlock key={idx} {...nextProps} />;
+            return <RowBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "link":
-            return <LinkBlock key={idx} {...nextProps} />;
+            return <LinkBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "circle-overlay":
-            return <CircleOverlayBlock key={idx} {...nextProps} />;
+            return <CircleOverlayBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "countdown":
-            return <CountdownBlock key={idx} {...nextProps} />;
+            return <CountdownBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           default:
             return (
               <i key={idx}>
-                Block <b>{block?.type}</b> not found please contact us.
+                Block not found please contact us.
               </i>
             );
         }

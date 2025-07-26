@@ -10,32 +10,31 @@ import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table';
 
-type RSVP = {
-  id: string
-  guest_name: string
-  email: string
-  response: string
-  event_id: string
-  created_at: string
-}
+import { Tables } from '../../../../database.types';
+
+type RSVP = Tables<'rsvps'>
 
 const columnHelper = createColumnHelper<RSVP>()
 
 const columns = [
-  columnHelper.accessor('guest_name', {
-    header: 'Guest Name',
+  columnHelper.accessor('name', {
+    header: 'Nombre',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('email', {
-    header: 'Email',
+  columnHelper.accessor('phone', {
+    header: 'Teléfono',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('response', {
-    header: 'Response',
+  columnHelper.accessor('message', {
+    header: 'Mensaje',
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor('people_count', {
+    header: 'Invitados',
     cell: (info) => info.getValue(),
   }),
   columnHelper.accessor('created_at', {
-    header: 'Submitted At',
+    header: 'Creado en',
     cell: (info) =>
       new Date(info.getValue()).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -46,7 +45,7 @@ const columns = [
 ]
 
 export default function RSVPsTable() {
-  const { data, isLoading, isError } = useQuery<RSVP[]>({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['rsvps'],
     queryFn: async () => {
       const { data, error } = await supabase.from('rsvps').select('*')

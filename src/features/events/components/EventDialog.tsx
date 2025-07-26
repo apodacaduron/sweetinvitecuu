@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { Check, ChevronDownIcon, ChevronsUpDown, Loader2Icon } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -73,6 +73,52 @@ export default function EventForm(props: Props) {
   });
   const nameValue = form.watch("title"); // 🔁 Reactively watch "name"
 
+  const [eventOpen, setEventOpen] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [clientOpen, setClientOpen] = useState(false);
+  const [clientSearch, setClientSearch] = useState("");
+
+  const templatesQuery = useQuery({
+    queryKey: ["template-search", templateSearch],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("templates")
+        .select("id, name, search")
+        .ilike("search", `%${templateSearch}%`)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: templateOpen || !!templateSearch,
+  });
+
+  const clientsQuery = useQuery({
+    queryKey: ["client-search", clientSearch],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id, name, search")
+        .ilike("search", `%${clientSearch}%`)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: clientOpen || !!clientSearch,
+  });
+
+  const selectedTemplate = useMemo(
+    () => templatesQuery.data?.find((t) => t.id === form.getValues("template_id")),
+    [templatesQuery.data, form.watch("template_id")]
+  );
+
+  const selectedClient = useMemo(
+    () => clientsQuery.data?.find((c) => c.id === form.getValues("client_id")),
+    [clientsQuery.data, form.watch("client_id")]
+  );
+
   // File uploaders for SEO Image and Background Music
   const seoImageUploader = useFileUploader({
     origin: "events",
@@ -84,8 +130,8 @@ export default function EventForm(props: Props) {
       toast.success("SEO image uploaded!");
     },
     ...(origin === "events"
-      ? { eventId: props.item?.id }
-      : { templateId: props.item?.id }),
+      ? { eventId: props.item?.id || null }
+      : { templateId: props.item?.id || null }),
   });
 
   const bgMusicUploader = useFileUploader({
@@ -98,18 +144,13 @@ export default function EventForm(props: Props) {
       toast.success("Background music uploaded!");
     },
     ...(origin === "events"
-      ? { eventId: props.item?.id }
-      : { templateId: props.item?.id }),
+      ? { eventId: props.item?.id || null }
+      : { templateId: props.item?.id || null }),
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const payload = {
-        ...data,
-        event_date: data.event_date.toISOString(),
-      };
-
-      return supabase.from("events").insert(payload).throwOnError();
+    mutationFn: async (data: Omit<Event, 'blocks' | 'id' | 'created_at' | 'created_by' | 'search'>) => {
+      return supabase.from("events").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
       await queryClient.invalidateQueries({
@@ -129,22 +170,17 @@ export default function EventForm(props: Props) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Partial<Event>) => {
       if (!props.item?.id)
         throw new Error("Could not update event, id was not provided");
 
-      const payload = {
-        ...data,
-        event_date: data.event_date.toISOString(),
-      };
-
       return supabase
         .from("events")
-        .update(payload)
+        .update(data)
         .eq("id", props.item.id)
         .throwOnError();
     },
-    async onSuccess(_, variables) {
+    async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: ["events"] });
       toast.success("Event updated");
       form.reset();
@@ -192,7 +228,7 @@ export default function EventForm(props: Props) {
 
   useEffect(() => {
     form.setValue("slug", slugify(nameValue));
-  }, [nameValue]);
+  }, [nameValue, form]);
 
   return (
     <Dialog {...props.dialogProps}>
@@ -203,10 +239,7 @@ export default function EventForm(props: Props) {
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 pt-2"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
             <FormField
               control={form.control}
               name="title"
@@ -235,40 +268,30 @@ export default function EventForm(props: Props) {
               )}
             />
 
+            {/* Event Date + Time Picker */}
             <FormField
               control={form.control}
               name="event_date"
               render={({ field }) => {
                 const date = field.value ? new Date(field.value) : undefined;
-                const [open, setOpen] = React.useState(false);
-
-                const hours =
-                  date?.getHours().toString().padStart(2, "0") ?? "00";
-                const minutes =
-                  date?.getMinutes().toString().padStart(2, "0") ?? "00";
+                const hours = date?.getHours().toString().padStart(2, "0") ?? "00";
+                const minutes = date?.getMinutes().toString().padStart(2, "0") ?? "00";
 
                 return (
                   <FormItem>
                     <div className="flex gap-4">
                       <div className="flex flex-col gap-1">
                         <FormLabel className="px-1 h-5">Event Date</FormLabel>
-                        {/* DATE PICKER */}
-                        <Popover open={open} onOpenChange={setOpen}>
+                        <Popover open={eventOpen} onOpenChange={setEventOpen}>
                           <PopoverTrigger asChild>
                             <FormControl>
-                              <Button
-                                variant="outline"
-                                className="justify-between font-normal"
-                              >
+                              <Button variant="outline" className="justify-between font-normal">
                                 {date ? format(date, "PPP") : "Select date"}
                                 <ChevronDownIcon />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto overflow-hidden p-0"
-                            align="start"
-                          >
+                          <PopoverContent className="w-auto p-0">
                             <Calendar
                               mode="single"
                               selected={date}
@@ -276,14 +299,9 @@ export default function EventForm(props: Props) {
                               onSelect={(selectedDate) => {
                                 if (!selectedDate) return;
                                 const updated = new Date(selectedDate);
-                                if (date) {
-                                  updated.setHours(
-                                    date.getHours(),
-                                    date.getMinutes()
-                                  );
-                                }
+                                if (date) updated.setHours(date.getHours(), date.getMinutes());
                                 field.onChange(updated);
-                                setOpen(false);
+                                setEventOpen(false);
                               }}
                               initialFocus
                             />
@@ -291,7 +309,6 @@ export default function EventForm(props: Props) {
                         </Popover>
                       </div>
 
-                      {/* TIME PICKER */}
                       <div className="flex flex-col gap-1">
                         <Label htmlFor="time-picker" className="px-1 text-sm">
                           Time
@@ -302,14 +319,12 @@ export default function EventForm(props: Props) {
                           step="60"
                           value={`${hours}:${minutes}`}
                           onChange={(e) => {
-                            const [h, m] = e.target.value
-                              .split(":")
-                              .map(Number);
+                            const [h, m] = e.target.value.split(":").map(Number);
                             const updated = new Date(field.value || new Date());
-                            updated.setHours(h, m);
+                            updated.setHours(h ?? 0, m);
                             field.onChange(updated);
                           }}
-                          className="bg-background w-28 appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                          className="w-28 appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
                         />
                       </div>
                     </div>
@@ -319,180 +334,107 @@ export default function EventForm(props: Props) {
               }}
             />
 
+            {/* Template Selector */}
             <FormField
               control={form.control}
               name="template_id"
-              render={({ field }) => {
-                const [open, setOpen] = React.useState(false);
-                const [search, setSearch] = React.useState("");
-
-                const templatesQuery = useQuery({
-                  queryKey: ["template-search", search],
-                  queryFn: async () => {
-                    const { data, error } = await supabase
-                      .from("templates")
-                      .select("id, name, search")
-                      .ilike("search", `%${search}%`) // búsqueda insensible a mayúsculas
-                      .order("created_at", { ascending: false });
-
-                    if (error) throw error;
-                    return data ?? [];
-                  },
-                  enabled: open || !!search,
-                });
-
-                const selectedTemplate = templatesQuery.data?.find(
-                  (t) => t.id === field.value
-                );
-
-                return (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Template</FormLabel>
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "justify-between w-full",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {selectedTemplate?.name ?? "Select a template"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput
-                            placeholder="Search template..."
-                            className="h-9"
-                            value={search}
-                            onValueChange={setSearch}
-                          />
-                          <CommandList>
-                            <CommandEmpty>No template found.</CommandEmpty>
-                            <CommandGroup>
-                              {templatesQuery.data?.map((template) => (
-                                <CommandItem
-                                  key={template.id}
-                                  value={template.name}
-                                  onSelect={() => {
-                                    form.setValue("template_id", template.id);
-                                    setOpen(false);
-                                  }}
-                                >
-                                  {template.name}
-                                  <Check
-                                    className={cn(
-                                      "ml-auto h-4 w-4",
-                                      template.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={() => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Template</FormLabel>
+                  <Popover open={templateOpen} onOpenChange={setTemplateOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant="outline" role="combobox" className="justify-between w-full">
+                          {selectedTemplate?.name ?? "Select a template"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search template..."
+                          className="h-9"
+                          value={templateSearch}
+                          onValueChange={setTemplateSearch}
+                        />
+                        <CommandList>
+                          <CommandEmpty>No template found.</CommandEmpty>
+                          <CommandGroup>
+                            {templatesQuery.data?.map((template) => (
+                              <CommandItem
+                                key={template.id}
+                                value={template.name}
+                                onSelect={() => {
+                                  form.setValue("template_id", template.id);
+                                  setTemplateOpen(false);
+                                }}
+                              >
+                                {template.name}
+                                <Check className={cn("ml-auto h-4 w-4", template.id === form.watch("template_id") ? "opacity-100" : "opacity-0")} />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
+            {/* Client Selector */}
             <FormField
               control={form.control}
               name="client_id"
-              render={({ field }) => {
-                const [open, setOpen] = React.useState(false);
-                const [search, setSearch] = React.useState("");
-
-                const clientsQuery = useQuery({
-                  queryKey: ["client-search", search],
-                  queryFn: async () => {
-                    const { data, error } = await supabase
-                      .from("clients")
-                      .select("id, name, search")
-                      .ilike("search", `%${search}%`) // búsqueda insensible a mayúsculas
-                      .order("created_at", { ascending: false });
-
-                    if (error) throw error;
-                    return data ?? [];
-                  },
-                  enabled: open || !!search,
-                });
-
-                const selectedTemplate = clientsQuery.data?.find(
-                  (t) => t.id === field.value
-                );
-
-                return (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Client</FormLabel>
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "justify-between w-full",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {selectedTemplate?.name ?? "Select a client"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput
-                            placeholder="Search client..."
-                            className="h-9"
-                            value={search}
-                            onValueChange={setSearch}
-                          />
-                          <CommandList>
-                            <CommandEmpty>No client found.</CommandEmpty>
-                            <CommandGroup>
-                              {clientsQuery.data?.map((client) => (
-                                <CommandItem
-                                  key={client.id}
-                                  value={client.name ?? ""}
-                                  onSelect={() => {
-                                    form.setValue("client_id", client.id);
-                                    setOpen(false);
-                                  }}
-                                >
-                                  {client.name}
-                                  <Check
-                                    className={cn(
-                                      "ml-auto h-4 w-4",
-                                      client.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={() => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Client</FormLabel>
+                  <Popover open={clientOpen} onOpenChange={setClientOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant="outline" role="combobox" className="justify-between w-full">
+                          {selectedClient?.name ?? "Select a client"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search client..."
+                          className="h-9"
+                          value={clientSearch}
+                          onValueChange={setClientSearch}
+                        />
+                        <CommandList>
+                          <CommandEmpty>No client found.</CommandEmpty>
+                          <CommandGroup>
+                            {clientsQuery.data?.map((client) => (
+                              <CommandItem
+                                key={client.id}
+                                value={client.name ?? ''}
+                                onSelect={() => {
+                                  form.setValue("client_id", client.id);
+                                  setClientOpen(false);
+                                }}
+                              >
+                                {client.name}
+                                <Check className={cn("ml-auto h-4 w-4", client.id === form.watch("client_id") ? "opacity-100" : "opacity-0")} />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
+            {/* Misc Fields */}
             <FormField
               control={form.control}
               name="themeColor"
@@ -507,7 +449,6 @@ export default function EventForm(props: Props) {
               )}
             />
 
-            {/* SEO fields */}
             <FormField
               control={form.control}
               name="seoTitle"
@@ -539,45 +480,21 @@ export default function EventForm(props: Props) {
             <FormItem>
               <FormLabel>
                 Social Share Image
-                {form.watch("seoImage") && (
-                  <span className="ml-2 text-xs text-green-600">
-                    (Image already selected)
-                  </span>
-                )}
+                {form.watch("seoImage") && <span className="ml-2 text-xs text-green-600">(Image already selected)</span>}
               </FormLabel>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={seoImageUploader.handleFileChange}
-                className="mt-1"
-              />
+              <Input type="file" accept="image/*" onChange={seoImageUploader.handleFileChange} />
             </FormItem>
 
             <FormItem>
               <FormLabel>
                 Background Music
-                {form.watch("bgMusicUrl") && (
-                  <span className="ml-2 text-xs text-green-600">
-                    (Song already selected)
-                  </span>
-                )}
+                {form.watch("bgMusicUrl") && <span className="ml-2 text-xs text-green-600">(Song already selected)</span>}
               </FormLabel>
-              <Input
-                type="file"
-                accept="audio/*"
-                onChange={bgMusicUploader.handleFileChange}
-                className="mt-1"
-              />
+              <Input type="file" accept="audio/*" onChange={bgMusicUploader.handleFileChange} />
             </FormItem>
 
-            <Button
-              type="submit"
-              className="w-full mt-4"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting && (
-                <Loader2Icon className="animate-spin" />
-              )}
+            <Button type="submit" className="w-full mt-4" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting && <Loader2Icon className="animate-spin" />}
               Save
             </Button>
           </form>

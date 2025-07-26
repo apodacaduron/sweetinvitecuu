@@ -1,16 +1,12 @@
 import { Separator } from '@/components/ui/separator';
 
-import { BlockProps } from './BlockRenderer';
-import { ImageProperties } from './ImageBlock';
+import { BlockBase, TimelineProperties } from '../../context/BlocksContext';
 
-type TimelineProperties = {
-  items: Array<{
-    content: string;
-    image: ImageProperties["file"];
-  }>;
-};
-
-export default function TimelineBlock(props: BlockProps<TimelineProperties>) {
+export default function TimelineBlock(props: BlockBase<TimelineProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }) {
   return (
     <div
       id={props.id}

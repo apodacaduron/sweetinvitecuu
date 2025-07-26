@@ -1,14 +1,12 @@
 import { Button } from '@/components/ui/button';
 
-import BlockRenderer, { BlockProps } from './BlockRenderer';
+import { BlockBase, LinkProperties } from '../../context/BlocksContext';
 
-type LinkProperties = {
-  content: string
-  url: string
-  target: string
-}
-
-export default function LinkBlock(props: BlockProps<LinkProperties>) {
+export default function LinkBlock(props: BlockBase<LinkProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }) {
   return (
     <Button asChild>
       <a id={props.id} className={props.pageStyles[props.class]} data-type={props.type} href={props.properties.url} target={props.properties.target ?? '_blank'}>

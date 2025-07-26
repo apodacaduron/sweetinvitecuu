@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import React, { Suspense } from 'react';
 
-import { BlocksProvider } from '@/features/cms/context/BlocksContext';
+import { Block, BlocksProvider } from '@/features/cms/context/BlocksContext';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
 
@@ -38,14 +38,14 @@ export default function TemplatePage({ params }: Props) {
   if (templateQuery.error) return <p>Error loading template</p>;
   if (!templateQuery.data?.blocks) return <p>Loading blocks</p>;
 
-  const DynamicTemplate = dynamic(
+  const DynamicTemplate = dynamic<{ blocks: Block[] }>(
     () => import(`@/features/cms/templates/${slug.toString()}.tsx`)
   );
 
   return (
     <BlocksProvider parentData={templateQuery.data} origin="templates">
       <Suspense fallback={<div>Loading...</div>}>
-        <DynamicTemplate blocks={templateQuery.data.blocks} />
+        <DynamicTemplate blocks={templateQuery.data.blocks as unknown as Block[]} />
       </Suspense>
     </BlocksProvider>
   );

@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 
 import { supabase } from '@/lib/supabase';
 
-type FileResponseData = {
+export type FileResponseData = {
   id: string;          // media record id
   publicUrl: string;
   filePath: string;
@@ -20,8 +20,8 @@ type UseFileUploader = {
   eventId?: string | null;     // optional link to event
 };
 
-export function useFileUploader(options: UseFileUploader) {
-  const handleFile = async (file: File | null) => {
+export function useFileUploader(options?: UseFileUploader) {
+  const handleFile = async (file: File | null | undefined, opts = options) => {
     if (!file) {
       toast("No se seleccionó ningún archivo", {
         description: "Por favor, elige un archivo para subir.",
@@ -30,11 +30,11 @@ export function useFileUploader(options: UseFileUploader) {
     }
 
     const fileExt = file.name.split(".").pop();
-    const fileName = `${options.filename}-${Date.now()}.${fileExt}`;
-    const filePath = `${options.origin}/${options.foldername}/${fileName}`;
+    const fileName = `${opts?.filename}-${Date.now()}.${fileExt}`;
+    const filePath = `${opts?.origin}/${opts?.foldername}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from(options.bucket)
+      .from(opts?.bucket ?? '')
       .upload(filePath, file, {
         upsert: true,
       });
@@ -44,7 +44,7 @@ export function useFileUploader(options: UseFileUploader) {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from(options.bucket).getPublicUrl(filePath);
+    const { data: urlData } = supabase.storage.from(opts?.bucket ?? '').getPublicUrl(filePath);
     if (!urlData?.publicUrl) {
       toast("⚠️ No se pudo obtener la URL pública", {
         description: "El archivo se subió, pero no se pudo recuperar la URL.",
@@ -56,13 +56,13 @@ export function useFileUploader(options: UseFileUploader) {
     const { data: mediaData, error: mediaError } = await supabase
       .from('media')
       .insert({
-        template_id: options.templateId ?? null,
-        event_id: options.eventId ?? null,
+        template_id: opts?.templateId ?? null,
+        event_id: opts?.eventId ?? null,
         publicUrl: urlData.publicUrl,
         type: file.type,           // e.g. 'image/png' or 'audio/mpeg'
         filePath,
         fileName,
-        bucket: options.bucket,
+        bucket: opts?.bucket ?? '',
       })
       .select()
       .single();
@@ -74,7 +74,7 @@ export function useFileUploader(options: UseFileUploader) {
       return;
     }
 
-    options.onUpdate({
+    opts?.onUpdate({
       id: mediaData.id,
       publicUrl: mediaData.publicUrl!,
       filePath: mediaData.filePath!,

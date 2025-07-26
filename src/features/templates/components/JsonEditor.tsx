@@ -4,12 +4,11 @@ import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-
-type JsonValue = object | string | any[];
+import { Block } from '@/features/cms/context/BlocksContext';
 
 type JsonEditorProps = {
-  value: JsonValue;
-  onChange: (value: any) => void; // now can be object or string
+  value: Block[];
+  onChange: (value: Block[]) => void; // now can be object or string
   onBlur?: () => void;
 };
 
@@ -24,7 +23,7 @@ export function JsonEditor({ value, onChange, onBlur }: JsonEditorProps) {
       setText(JSON.stringify(value, null, 2));
     }
     setError(null);
-  }, []);
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
@@ -32,11 +31,11 @@ export function JsonEditor({ value, onChange, onBlur }: JsonEditorProps) {
     setError(null);
 
     try {
-      const parsed = JSON.parse(val);
+      const parsed = JSON.parse(val) as Block[];
       onChange(parsed);
     } catch {
       // send raw string if invalid JSON
-      onChange(val);
+      onChange(val as unknown as Block[]);
     }
   };
 
@@ -47,8 +46,8 @@ export function JsonEditor({ value, onChange, onBlur }: JsonEditorProps) {
       setText(formatted);
       onChange(parsed);
       setError(null);
-    } catch (e: any) {
-      setError('Cannot format: ' + e.message);
+    } catch (e) {
+      setError('Cannot format: ' + e);
     }
   };
 

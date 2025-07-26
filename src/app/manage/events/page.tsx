@@ -51,11 +51,11 @@ export default function Page() {
     }
   }
 
-  function openEditor(item) {
+  function openEditor(item: Event) {
     router.push(`/manage/events/${item.id}`)
   }
 
-  function openPreview(item) {
+  function openPreview(item: Event) {
     window.open(`${window.location.origin}/events/${item.slug}`)
   }
 

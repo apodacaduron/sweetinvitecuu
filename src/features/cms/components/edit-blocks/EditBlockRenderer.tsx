@@ -1,7 +1,6 @@
 "use client";
 
-import { CSSProperties } from 'react';
-
+import { Block } from '../../context/BlocksContext';
 import GalleryEditBlock from './GalleryEditBlock';
 import GroupEditBlock from './GroupEditBlock';
 import ImageEditBlock from './ImageEditBlock';
@@ -12,55 +11,41 @@ import TextEditBlock from './TextEditBlock';
 import TimelineEditBlock from './TimelineEditBlock';
 
 type Props = {
-  blocks: any;
-};
-
-export type EditBlockProps<T> = {
-  properties: T;
-  id: string;
-  class: string;
-  type: string;
-  visible: boolean;
-  original: boolean;
-  style?: CSSProperties | undefined;
+  blocks: Block[];
 };
 
 export default function EditBlockRenderer(props: Props) {
   return (
     <>
-      {props.blocks?.map((block: any, idx: number) => {
-        const nextProps = {
-          ...block,
-        };
-
+      {props.blocks?.map((block, idx) => {
         switch (block?.type) {
           case "group":
-            return <GroupEditBlock key={idx} {...nextProps} />;
+            return <GroupEditBlock key={idx} {...block} />;
           case "image":
-            return <ImageEditBlock key={idx} {...nextProps} />;
+            return <ImageEditBlock key={idx} {...block} />;
           case "timeline":
             return (
-              <TimelineEditBlock key={idx} {...nextProps} />
+              <TimelineEditBlock key={idx} {...block} />
             );
           case "text":
             return (
-              <TextEditBlock key={idx} {...nextProps} />
+              <TextEditBlock key={idx} {...block} />
             );
           case "link":
             return (
-              <LinkEditBlock key={idx} {...nextProps} />
+              <LinkEditBlock key={idx} {...block} />
             );
           case "gallery":
             return (
-              <GalleryEditBlock key={idx} {...nextProps} />
+              <GalleryEditBlock key={idx} {...block} />
             );
           case "rsvp":
             return (
-              <RsvpEditBlock key={idx} {...nextProps} />
+              <RsvpEditBlock key={idx} {...block} />
             );
           case "row":
             return (
-              <RowEditBlock key={idx} {...nextProps} />
+              <RowEditBlock key={idx} {...block} />
             );
           default:
             return <i key={idx}>Edit block <b>{block?.type}</b> not found please contact us.</i>;

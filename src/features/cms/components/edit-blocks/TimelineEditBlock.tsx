@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { GripVertical } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -12,19 +12,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useFileUploader } from '@/hooks/useFileUploader';
 import { cn } from '@/lib/utils';
 
+import { Block, BlockBase, TimelineProperties } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
-
-type TimelineItem = {
-  content: string;
-  image: {
-    publicUrl: string;
-    filePath: string;
-    fileName: string;
-    bucket: string;
-  };
-};
 
 type DragItem = {
   index: number;
@@ -40,7 +30,7 @@ function DraggableTimelineItem({
   removeItem,
   visible,
 }: {
-  item: TimelineItem;
+  item: TimelineProperties["items"][number];
   index: number;
   moveItem: (from: number, to: number) => void;
   updateItemContent: (index: number, content: string) => void;
@@ -52,7 +42,7 @@ function DraggableTimelineItem({
   const handleRef = useRef<HTMLDivElement>(null);
 
   const [, drop] = useDrop<DragItem>({
-    accept: 'timeline-item',
+    accept: "timeline-item",
     hover(dragged) {
       if (dragged.index !== index) {
         moveItem(dragged.index, index);
@@ -62,7 +52,7 @@ function DraggableTimelineItem({
   });
 
   const [{ isDragging }, drag] = useDrag({
-    type: 'timeline-item',
+    type: "timeline-item",
     item: { index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -77,8 +67,8 @@ function DraggableTimelineItem({
     <div
       ref={containerRef}
       className={cn(
-        'border rounded p-4 relative bg-muted/20',
-        isDragging && 'opacity-50'
+        "border rounded p-4 relative bg-muted/20",
+        isDragging && "opacity-50"
       )}
     >
       {/* Drag Handle */}
@@ -130,17 +120,25 @@ function DraggableTimelineItem({
   );
 }
 
-function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>) {
+function TimelineEditBlockInner(
+  props: BlockBase<TimelineProperties> & { type: "timeline" }
+) {
+  const fileUploader = useFileUploader();
   const { updateBlock, parentData, origin } = useEditableBlocks();
-  const [items, setItems] = useState<TimelineItem[]>(props.properties.items ?? []);
+  const [items, setItems] = useState<TimelineProperties["items"]>(
+    props.properties.items ?? []
+  );
 
-  const syncToContext = (newItems: TimelineItem[]) => {
+  const syncToContext = (newItems: TimelineProperties["items"]) => {
     setItems(newItems);
     updateBlock({ ...props, properties: { items: newItems } });
   };
 
   const addItem = () => {
-    syncToContext([...items, { content: '', image: {} } as TimelineItem]);
+    syncToContext([
+      ...items,
+      { content: "", image: {} } as TimelineProperties["items"][number],
+    ]);
   };
 
   const removeItem = (index: number) => {
@@ -152,36 +150,44 @@ function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>
   const moveItem = (from: number, to: number) => {
     const updated = [...items];
     const [moved] = updated.splice(from, 1);
-    updated.splice(to, 0, moved);
-    syncToContext(updated);
+    if (moved) {
+      updated.splice(to, 0, moved);
+      syncToContext(updated);
+    }
   };
 
   const updateItemContent = (index: number, content: string) => {
     const updated = [...items];
-    updated[index].content = content;
-    syncToContext(updated);
+    if (updated[index]) {
+      updated[index].content = content;
+      syncToContext(updated);
+    }
   };
 
   const handleImageUpload = (index: number, file: File) => {
-    useFileUploader({
+    fileUploader.handleFile(file, {
       origin,
-      foldername: parentData?.id ?? '',
+      foldername: parentData?.id ?? "",
       filename: `${props.id}-${index}`,
       onUpdate: (fileResponse) => {
         const updated = [...items];
-        updated[index].image = fileResponse;
-        syncToContext(updated);
+        if (updated[index]) {
+          updated[index].image = fileResponse;
+          syncToContext(updated);
+        }
       },
-      bucket: 'media',
-      ...(origin === 'events' ? { eventId: parentData?.id } : { templateId: parentData?.id })
-    }).handleFile(file);
+      bucket: "media",
+      ...(origin === "events"
+        ? { eventId: parentData?.id || null }
+        : { templateId: parentData?.id || null }),
+    });
   };
 
   return (
     <EditBlockWrapper
       insetButton
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
-      block={props}
+      block={props as Block}
     >
       <div className="space-y-4">
         {items.map((item, index) => (
@@ -197,7 +203,12 @@ function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>
           />
         ))}
 
-        <Button onClick={addItem} type="button" className="w-full" variant="outline">
+        <Button
+          onClick={addItem}
+          type="button"
+          className="w-full"
+          variant="outline"
+        >
           ➕ Agregar evento
         </Button>
       </div>
@@ -206,7 +217,9 @@ function TimelineEditBlockInner(props: EditBlockProps<{ items: TimelineItem[] }>
 }
 
 // Main export with DndProvider
-export default function TimelineEditBlock(props: EditBlockProps<{ items: TimelineItem[] }>) {
+export default function TimelineEditBlock(
+  props: BlockBase<TimelineProperties> & { type: "timeline" }
+) {
   return (
     <DndProvider backend={HTML5Backend}>
       <TimelineEditBlockInner {...props} />

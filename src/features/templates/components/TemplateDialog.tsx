@@ -68,8 +68,8 @@ export default function TemplateForm(props: Props) {
       toast.success("SEO image uploaded!");
     },
     ...(origin === "events"
-      ? { eventId: props.item?.id }
-      : { templateId: props.item?.id }),
+      ? { eventId: props.item?.id || null }
+      : { templateId: props.item?.id || null }),
   });
 
   const bgMusicUploader = useFileUploader({
@@ -82,8 +82,8 @@ export default function TemplateForm(props: Props) {
       toast.success("Background music uploaded!");
     },
     ...(origin === "events"
-      ? { eventId: props.item?.id }
-      : { templateId: props.item?.id }),
+      ? { eventId: props.item?.id || null }
+      : { templateId: props.item?.id || null }),
   });
 
   const createMutation = useMutation({
@@ -118,7 +118,7 @@ export default function TemplateForm(props: Props) {
         .eq("id", props.item.id)
         .throwOnError();
     },
-    async onSuccess(_, variables) {
+    async onSuccess() {
       await queryTemplate.invalidateQueries({ queryKey: ["templates"] });
       toast.success("Template updated");
       form.reset();
@@ -166,7 +166,7 @@ export default function TemplateForm(props: Props) {
 
   useEffect(() => {
     form.setValue("slug", slugify(nameValue));
-  }, [nameValue]);
+  }, [nameValue, form]);
 
   return (
     <Dialog {...props.dialogProps}>

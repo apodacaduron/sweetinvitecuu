@@ -10,18 +10,19 @@ import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import EditBlockRenderer from '@/features/cms/components/edit-blocks/EditBlockRenderer';
+import { Block } from '@/features/cms/context/BlocksContext';
 import { EditableBlocksProvider } from '@/features/cms/context/EditableBlocksContext';
 import { supabase } from '@/lib/supabase';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { Tables } from '../../../../../database.types';
+import { Json } from '../../../../../database.types';
 
 export default function Page() {
   const params = useParams();
   const eventId = params.slug?.toString();
 
   const queryClient = useQueryClient();
-  const [editableBlocks, setEditableBlocks] = useState<Tables<'events'>['blocks']>([]);
+  const [editableBlocks, setEditableBlocks] = useState<Block[]>([]);
   const [previewUrl, setPreviewUrl] = useState("");
 
   const saveBlocksMutation = useMutation({
@@ -32,7 +33,7 @@ export default function Page() {
       return supabase
         .from("events")
         .update({
-          blocks: editableBlocks,
+          blocks: editableBlocks as unknown as Json,
         })
         .eq("id", eventId)
         .throwOnError();
@@ -70,7 +71,7 @@ export default function Page() {
   // 3. Cuando la data llegue, actualizar el estado local para editar
   useEffect(() => {
     if (eventQuery.data?.blocks) {
-      setEditableBlocks(eventQuery.data.blocks);
+      setEditableBlocks(eventQuery.data.blocks as unknown as Block[]);
       setPreviewUrl(
         `${window.location.origin}/events/${eventQuery.data?.slug}`
       );

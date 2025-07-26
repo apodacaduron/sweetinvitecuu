@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { BlockProps } from './BlockRenderer';
+import { BlockBase, CountdownProperties } from '../../context/BlocksContext';
 
-type TextProperties = {
-  timestamp: string
-}
-
-export default function CountdownBlock(props: BlockProps<TextProperties>) {
+export default function CountdownBlock(  props: BlockBase<CountdownProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
 
   function getTimeLeft() {

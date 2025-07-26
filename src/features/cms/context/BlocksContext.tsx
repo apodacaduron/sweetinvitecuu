@@ -1,8 +1,6 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 
-import { Json, Tables } from '../../../../database.types';
-
-type Block = any; // Replace with your proper block type if available
+import { Tables } from '../../../../database.types';
 
 type BlocksContextType = {
   parentData: Tables<"events"> | Tables<"templates"> | undefined;
@@ -47,7 +45,7 @@ type BlockType =
   | "gallery"
   | "rsvp";
 
-interface BlockBase<T> {
+export interface BlockBase<T> {
   id: string;
   tag: string;
   type: BlockType;
@@ -57,17 +55,15 @@ interface BlockBase<T> {
   properties: T;
 }
 
-function buildBlock<T extends object>(
-  type: BlockType,
-  properties: T,
-  overrides?: Partial<
-    Pick<BlockBase<T>, "tag" | "class" | "visible" | "original">
-  >
-): BlockBase<T> {
+function buildBlock<K extends keyof BlockDefinition>(
+  type: K,
+  properties: BlockDefinition[K],
+  overrides?: Partial<Pick<BlockBase<BlockDefinition[K]>, "tag" | "class" | "visible" | "original">>
+): BlockBase<BlockDefinition[K]> & { type: K } {
   return {
     id: crypto.randomUUID(),
-    tag: overrides?.tag ?? "",
     type,
+    tag: overrides?.tag ?? "",
     class: overrides?.class ?? "",
     visible: overrides?.visible ?? true,
     original: overrides?.original ?? true,
@@ -75,13 +71,14 @@ function buildBlock<T extends object>(
   };
 }
 
-const blocksMap = {
-  'circle-overlay': buildBlock("circle-overlay", { content: "" }),
+export const blocksMap = {
+  "circle-overlay": buildBlock("circle-overlay", { blocks: [] }),
   text: buildBlock("text", { content: "" }),
   group: buildBlock("group", { blocks: [] }),
   row: buildBlock("row", { blocks: [] }),
   image: buildBlock("image", {
     file: {
+      id: "",
       fileName: "",
       filePath: "",
       publicUrl: "",
@@ -89,70 +86,96 @@ const blocksMap = {
     },
   }),
   link: buildBlock("link", {
-      url: "",
-      target: "",
-      bucket: "",
+    url: "",
+    target: "",
+    content: "",
   }),
+  timeline: buildBlock("timeline", {
+    items: [],
+  }),
+  countdown: buildBlock("countdown", {
+    timestamp: "",
+  }),
+  gallery: buildBlock("gallery", {
+    images: [],
+  }),
+  rsvp: buildBlock("rsvp", null),
+} satisfies Record<keyof BlockDefinition, Block>;
+
+export type Block = {
+  [K in keyof BlockDefinition]: BlockBase<BlockDefinition[K]> & { type: K }
+}[keyof BlockDefinition];
+
+type BlockDefinition = {
+  "circle-overlay": CircleOverlayProperties;
+  text: TextProperties;
+  group: GroupProperties;
+  row: RowProperties;
+  image: ImageProperties;
+  link: LinkProperties;
+  timeline: TimelineProperties;
+  countdown: CountdownProperties;
+  gallery: GalleryProperties;
+  rsvp: RsvpProperties;
 };
 
+export type GroupProperties = {
+  blocks: Block[];
+};
 
-//   "timeline": {
-//     "id": "",
-//     "tag": "",
-//     "type": "timeline",
-//     "class": "",
-//     "visible": true,
-//     "original": true,
-//     "properties": {
-//       "items": [
-//         {
-//           "image": {
-//             "bucket": "",
-//             "fileName": "",
-//             "filePath": "",
-//             "publicUrl": ""
-//           },
-//           "content": ""
-//         }
-//       ]
-//     }
-//   },
-//   "countdown": {
-//     "id": "",
-//     "tag": "",
-//     "type": "countdown",
-//     "class": "",
-//     "visible": true,
-//     "original": true,
-//     "properties": {
-//       "timestamp": ""
-//     }
-//   },
-//   "gallery": {
-//     "id": "",
-//     "tag": "",
-//     "type": "gallery",
-//     "class": "",
-//     "visible": true,
-//     "original": true,
-//     "properties": {
-//       "images": [
-//         {
-//           "bucket": "",
-//           "fileName": "",
-//           "filePath": "",
-//           "publicUrl": ""
-//         }
-//       ]
-//     }
-//   },
-//   "rsvp": {
-//     "id": "",
-//     "tag": "",
-//     "type": "rsvp",
-//     "class": "",
-//     "visible": true,
-//     "original": true,
-//     "properties": {}
-//   }
-// }
+export type RowProperties = {
+  blocks: Block[];
+};
+
+export type TextProperties = {
+  content: string;
+};
+
+export type CircleOverlayProperties = {
+  blocks: Block[];
+};
+
+export type ImageProperties = {
+  file: {
+    id: string;
+    fileName: string;
+    filePath: string;
+    publicUrl: string;
+    bucket: string;
+  };
+};
+
+export type LinkProperties = {
+  url: string;
+  target: string;
+  content: string;
+};
+
+export type TimelineProperties = {
+  items: Array<{
+    image: {
+      id: string;
+      bucket: string;
+      fileName: string;
+      filePath: string;
+      publicUrl: string;
+    };
+    content: string;
+  }>;
+};
+
+export type CountdownProperties = {
+  timestamp: string;
+};
+
+export type GalleryProperties = {
+  images: Array<{
+    bucket: string;
+    id: string;
+    fileName: string;
+    filePath: string;
+    publicUrl: string;
+  }>;
+};
+
+export type RsvpProperties = null;

@@ -3,15 +3,11 @@ import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
+import { Block, BlockBase, TextProperties } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
-type TextProperties = {
-  content: string;
-};
-
-export default function TextEditBlock(props: EditBlockProps<TextProperties>) {
+export default function TextEditBlock(props: BlockBase<TextProperties> & { type: "text" }) {
   const { updateBlock } = useEditableBlocks();
   const [content, setContent] = useState(props.properties.content || "");
 
@@ -27,7 +23,7 @@ export default function TextEditBlock(props: EditBlockProps<TextProperties>) {
     <EditBlockWrapper
       className="w-full"
       insetButton
-      block={props}
+      block={props as Block}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
       <div

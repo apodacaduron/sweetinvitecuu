@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useBlocks } from '@/features/cms/context/BlocksContext';
+import {
+    BlockBase, CircleOverlayProperties, useBlocks
+} from '@/features/cms/context/BlocksContext';
 
-import BlockRenderer, { BlockProps } from '../BlockRenderer';
+import BlockRenderer from '../BlockRenderer';
 
-export default function CircleOverlayBlock(props: BlockProps<any>) {
+export default function CircleOverlayBlock(props: BlockBase<CircleOverlayProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }) {
   const { parentData } = useBlocks()
   const [isZoomed, setIsZoomed] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true);

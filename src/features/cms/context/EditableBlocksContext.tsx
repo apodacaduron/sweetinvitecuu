@@ -1,14 +1,13 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 
-import { Json, Tables } from '../../../../database.types';
-
-type Block = any; // Replace with your proper block type if available
+import { Tables } from '../../../../database.types';
+import { Block } from './BlocksContext';
 
 type EditableBlocksContextType = {
   parentData: Tables<'events'> | Tables<'templates'> | undefined;
   editableBlocks: Block[];
   updateBlock: (updatedBlock: Block) => void;
-  setEditableBlocks: React.Dispatch<React.SetStateAction<Json>>
+  setEditableBlocks: React.Dispatch<React.SetStateAction<Block[]>>
   origin: 'events' | 'templates'
 };
 
@@ -24,11 +23,12 @@ const EditableBlocksContext = createContext<EditableBlocksContextType | undefine
 
 export function EditableBlocksProvider(props: Props) {
   function updateBlockById(blocks: Block[], updatedBlock: Block): Block[] {
+    // @ts-expect-error: Some blocks might not have `properties.blocks`, skip type check here
     return blocks.map((block) => {
       if (block.id === updatedBlock.id) {
         return updatedBlock;
       }
-      if (block.properties?.blocks) {
+      if (block.properties && 'blocks' in block.properties) {
         return {
           ...block,
           properties: {
@@ -42,11 +42,11 @@ export function EditableBlocksProvider(props: Props) {
   }
 
   const updateBlock = (updatedBlock: Block) => {
-    props.setEditableBlocks((prevBlocks: any) => updateBlockById(prevBlocks, updatedBlock));
+    props.setEditableBlocks((prevBlocks: Block[]) => updateBlockById(prevBlocks, updatedBlock));
   };
 
   return (
-    <EditableBlocksContext.Provider value={{ editableBlocks: props.editableBlocks, updateBlock, setEditableBlocks: props.setEditableBlocks, parentData: props.parentData }}>
+    <EditableBlocksContext.Provider value={{ editableBlocks: props.editableBlocks, updateBlock, setEditableBlocks: props.setEditableBlocks, parentData: props.parentData, origin: props.origin }}>
       {props.children}
     </EditableBlocksContext.Provider>
   );

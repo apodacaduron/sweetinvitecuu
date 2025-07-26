@@ -25,7 +25,6 @@ export function LoginForm({
   const {
     register,
     handleSubmit,
-    formState: { errors },
   } = useForm<FormData>();
   const router = useRouter();
   const mutation = useMutation({

@@ -79,7 +79,7 @@ export default function ClientForm(props: Props) {
         .eq("id", props.item.id)
         .throwOnError();
     },
-    async onSuccess(_, variables) {
+    async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast.success("Client updated");
       form.reset();

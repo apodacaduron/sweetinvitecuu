@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import React, { Suspense } from 'react';
 
-import { BlocksProvider } from '@/features/cms/context/BlocksContext';
+import { Block, BlocksProvider } from '@/features/cms/context/BlocksContext';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
 
@@ -36,15 +36,15 @@ export default function EventPage({ params }: Props) {
   if (eventQuery.isLoading) return <p>Loading...</p>;
   if (eventQuery.error) return <p>Error loading template</p>;
 
-  const DynamicTemplate = dynamic(
+  const DynamicTemplate = dynamic<{ blocks: Block[] }>(
     () =>
-      import(`@/features/cms/templates/${eventQuery.data.templates.slug}.tsx`)
+      import(`@/features/cms/templates/${eventQuery.data?.templates?.slug}.tsx`)
   );
 
   return (
     <Suspense fallback={<div>Loading template...</div>}>
       <BlocksProvider parentData={eventQuery.data} origin="templates">
-        <DynamicTemplate blocks={eventQuery.data.blocks} />
+        <DynamicTemplate blocks={eventQuery.data?.blocks as unknown as Block[]} />
       </BlocksProvider>
     </Suspense>
   );

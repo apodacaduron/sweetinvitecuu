@@ -8,17 +8,11 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
 
+import { Block, BlockBase, LinkProperties } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
-type LinkProperties = {
-  content: string;
-  url: string;
-  target?: string;
-};
-
-export default function LinkEditBlock(props: EditBlockProps<LinkProperties>) {
+export default function LinkEditBlock(props: BlockBase<LinkProperties> & { type: "link" }) {
   const { updateBlock } = useEditableBlocks();
 
   const [content, setContent] = useState(props.properties.content || '');
@@ -49,7 +43,7 @@ export default function LinkEditBlock(props: EditBlockProps<LinkProperties>) {
     <EditBlockWrapper
       className="w-full"
       insetButton
-      block={props}
+      block={props as Block}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
       <div className={props.visible ? '' : 'opacity-70 diagonal-lines pointer-events-none relative'}>

@@ -7,15 +7,13 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { BlockProps } from './BlockRenderer';
-import { ImageProperties } from './ImageBlock';
+import { BlockBase, GalleryProperties } from '../../context/BlocksContext';
 
-export type GalleryProperties = {
-  title: string;
-  images: Array<ImageProperties['file']>;
-};
-
-export default function GalleryBlock(props: BlockProps<GalleryProperties>) {
+export default function GalleryBlock(props: BlockBase<GalleryProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }) {
   return (
       <Swiper
         id={props.id} className={props.pageStyles[props.class]} data-type={props.type}

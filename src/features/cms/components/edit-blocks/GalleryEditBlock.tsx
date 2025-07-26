@@ -3,21 +3,21 @@
 import { useRef, useState } from 'react';
 
 import { Label } from '@/components/ui/label';
-import { useFileUploader } from '@/hooks/useFileUploader';
+import { FileResponseData, useFileUploader } from '@/hooks/useFileUploader';
 import { cn } from '@/lib/utils'; // si usas clsx o util similar
 
+import { Block, BlockBase, GalleryProperties } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
-export default function GalleryEditBlock(props: EditBlockProps<any>) {
+export default function GalleryEditBlock(props: BlockBase<GalleryProperties> & { type: "gallery" }) {
   const { updateBlock, parentData, origin } = useEditableBlocks();
   const inputFileRef = useRef<HTMLInputElement>(null);
   const images = props.properties?.images ?? [];
 
-  const [localImages, setLocalImages] = useState(images);
+  const [localImages, setLocalImages] = useState<FileResponseData[]>(images);
 
-  const updateImages = (newImages: any[]) => {
+  const updateImages = (newImages: GalleryProperties['images']) => {
     setLocalImages(newImages);
     updateBlock({
       ...props,
@@ -37,7 +37,7 @@ export default function GalleryEditBlock(props: EditBlockProps<any>) {
       updateImages(updated);
     },
     bucket: 'media',
-    ...(origin === 'events' ? { eventId: parentData?.id } : { templateId: parentData?.id })
+    ...(origin === 'events' ? { eventId: parentData?.id || null } : { templateId: parentData?.id || null })
   });
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +67,7 @@ export default function GalleryEditBlock(props: EditBlockProps<any>) {
     <EditBlockWrapper
       insetButton
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
-      block={props}
+      block={props as Block}
     >
       <Label className="mb-2 block">
         Agrega imágenes a la galería arrastrando o haciendo clic aquí

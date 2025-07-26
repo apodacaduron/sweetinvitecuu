@@ -78,7 +78,7 @@ export default function Page() {
                 {/* Create and edit dialog */}
                 <ClientDialog
                   onSuccess={() => setFormDialogOpen(false)}
-                  client={currentItem}
+                  item={currentItem}
                   queryKeyGetter={queryKeyGetter}
                   dialogProps={{
                     open: formDialogOpen,

@@ -5,10 +5,11 @@ import { twMerge } from 'tailwind-merge';
 
 import { BlockRenderer } from '@/features/cms/components';
 
+import { Block } from '../context/BlocksContext';
 import pageStyles from './minimal-moon.module.css';
 
 type Props = {
-  blocks: any;
+  blocks: Block[];
 };
 
 const oldStandard = Old_Standard_TT({

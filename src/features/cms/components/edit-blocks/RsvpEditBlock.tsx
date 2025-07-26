@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -7,16 +6,16 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
+import { Block, BlockBase, RsvpProperties } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
-import { EditBlockProps } from './EditBlockRenderer';
 import { EditBlockWrapper } from './EditBlockWrapper';
 
-export default function RsvpBlock(props: EditBlockProps<any>) {
+export default function RsvpBlock(props: BlockBase<RsvpProperties> & { type: "rsvp" }) {
   const { updateBlock } = useEditableBlocks();
 
   return (
     <EditBlockWrapper
-      block={props}
+      block={props as Block}
       onClickVisibility={(visible) => updateBlock({ ...props, visible })}
     >
       <div className="space-y-4 pt-2 text-muted-foreground">

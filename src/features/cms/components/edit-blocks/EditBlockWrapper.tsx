@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { IconDotsVertical } from '@tabler/icons-react';
 
-import { EditBlockProps } from './EditBlockRenderer';
+import { Block } from '../../context/BlocksContext';
 
 type Props = {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ type Props = {
   childClassName?: string;
   insetButton?: boolean;
   onClickVisibility(isVisible: boolean): void;
-  block: EditBlockProps<any>;
+  block: Block;
 };
 
 export const blockTypeIconMap: Record<
@@ -47,6 +47,8 @@ export const blockTypeIconMap: Record<
 
 function BlockIcon({ type }: { type: string }) {
   const Icon = blockTypeIconMap[type] || blockTypeIconMap.default;
+  if (!Icon) return null
+
   return <Icon className="h-5 w-5 text-gray-500" />;
 }
 

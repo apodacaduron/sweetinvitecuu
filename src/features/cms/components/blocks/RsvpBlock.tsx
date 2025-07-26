@@ -16,8 +16,7 @@ import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 
-import { useBlocks } from '../../context/BlocksContext';
-import { BlockProps } from './BlockRenderer';
+import { BlockBase, RsvpProperties, useBlocks } from '../../context/BlocksContext';
 
 const rsvpSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -33,7 +32,11 @@ const rsvpSchema = z.object({
 
 type RsvpSchema = z.infer<typeof rsvpSchema>;
 
-export default function RsvpBlock(props: BlockProps<any>) {
+export default function RsvpBlock(props: BlockBase<RsvpProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }) {
   const { parentData, origin } = useBlocks()
 
   const form = useForm<RsvpSchema>({
@@ -48,6 +51,8 @@ export default function RsvpBlock(props: BlockProps<any>) {
 
   const createMutation = useMutation({
     mutationFn: async (data: RsvpSchema) => {
+      if (!parentData?.id) throw new Error('Could not send form, event id is required')
+
       const newRsvp = {
         ...data,
         people_count: data.people_count || 0,
@@ -57,7 +62,7 @@ export default function RsvpBlock(props: BlockProps<any>) {
 
       return supabase.from("rsvps").insert(newRsvp).throwOnError();
     },
-    async onSuccess(_, variables) {
+    async onSuccess() {
       toast.success("Gracias por confirmar tu asistencia!");
       form.reset();
     },

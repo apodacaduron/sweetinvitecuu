@@ -1,18 +1,17 @@
-import { BlockProps } from './BlockRenderer';
+import { BlockBase, ImageProperties } from '../../context/BlocksContext';
 
-export type ImageProperties = {
-  file: {
-    publicUrl: string;
-    filePath: string;
-    fileName: string;
-    bucket: string;
-  };
-};
-
-export default function ImageBlock(props: BlockProps<ImageProperties>) {
+export default function ImageBlock(
+  props: BlockBase<ImageProperties> & {
+    pageStyles: {
+      readonly [key: string]: string;
+    };
+  }
+) {
   return (
     <img
-      id={props.id} className={props.pageStyles[props.class]} data-type={props.type}
+      id={props.id}
+      className={props.pageStyles[props.class]}
+      data-type={props.type}
       src={props.properties.file.publicUrl || undefined}
       alt="Image"
       loading="eager"
