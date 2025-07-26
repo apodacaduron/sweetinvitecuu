@@ -179,7 +179,7 @@ export default function Page() {
                       ) : (
                         <div className="text-center text-gray-500 py-10">
                           <p className="mb-4">No hay bloques.</p>
-                          <AddBlockButton />
+                          <AddBlockButton mode="adjacent" />
                         </div>
                       )
                     ) : (
