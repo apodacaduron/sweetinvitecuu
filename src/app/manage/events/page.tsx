@@ -17,7 +17,7 @@ export default function Page() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<Event | null>(null);
-  const router = useRouter()
+  const router = useRouter();
 
   const queryKeyGetter = useCallback(() => {
     return searchInput ? ["events", { searchInput }] : ["events"];
@@ -36,27 +36,21 @@ export default function Page() {
   function handleFormDialogChange(open: boolean) {
     setFormDialogOpen(open);
 
-    const isClosing = !open;
-    if (isClosing) {
-      setCurrentItem(null);
-    }
+    if (!open) setCurrentItem(null);
   }
 
   function handleDeleteDialogChange(open: boolean) {
     setDeleteDialogOpen(open);
 
-    const isClosing = !open;
-    if (isClosing) {
-      setCurrentItem(null);
-    }
+    if (!open) setCurrentItem(null);
   }
 
   function openEditor(item: Event) {
-    router.push(`/manage/events/${item.id}`)
+    router.push(`/manage/events/${item.id}`);
   }
 
   function openPreview(item: Event) {
-    window.open(`${window.location.origin}/events/${item.slug}`)
+    window.open(`${window.location.origin}/events/${item.slug}`);
   }
 
   return (
@@ -70,9 +64,13 @@ export default function Page() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader breadcrumbs={[{
-          label: 'Events',
-        }]} />
+        <SiteHeader
+          breadcrumbs={[
+            {
+              label: "Events",
+            },
+          ]}
+        />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -87,7 +85,10 @@ export default function Page() {
 
                 {/* Create and edit dialog */}
                 <EventDialog
-                  onSuccess={() => setFormDialogOpen(false)}
+                  onSuccess={() => {
+                    setFormDialogOpen(false);
+                    setCurrentItem(null);
+                  }}
                   item={currentItem}
                   queryKeyGetter={queryKeyGetter}
                   dialogProps={{
@@ -102,7 +103,10 @@ export default function Page() {
               </div>
 
               <DeleteEventDialog
-                onSuccess={() => setDeleteDialogOpen(false)}
+                onSuccess={() => {
+                  setDeleteDialogOpen(false);
+                  setCurrentItem(null);
+                }}
                 queryKeyGetter={queryKeyGetter}
                 itemId={currentItem?.id}
                 itemName={currentItem?.title}

@@ -12,6 +12,7 @@ import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import AddBlockButton from '@/features/cms/components/edit-blocks/AddBlockButton';
 import EditBlockRenderer from '@/features/cms/components/edit-blocks/EditBlockRenderer';
 import { Block } from '@/features/cms/context/BlocksContext';
 import { EditableBlocksProvider } from '@/features/cms/context/EditableBlocksContext';
@@ -143,7 +144,9 @@ export default function Page() {
                       {editorType === "ui" ? <Code /> : <Layout />}
                       {editorType === "ui" ? "JSON View" : "UI View"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem><Cog /> Page settings</DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Cog /> Page settings
+                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <a target="_blank" href={previewUrl}>
                         <ExternalLink />
@@ -168,22 +171,25 @@ export default function Page() {
                     Error al cargar la plantilla.
                   </p>
                 )}
-                {!templateQuery.isLoading &&
-                  !templateQuery.isError &&
-                  editableBlocks.length > 0 &&
-                  (editorType === "ui" ? (
-                    <EditBlockRenderer blocks={editableBlocks} />
-                  ) : (
-                    <JsonEditor
-                      value={editableBlocks}
-                      onChange={(newJson) => setEditableBlocks(newJson)}
-                    />
-                  ))}
-                {!templateQuery.isLoading &&
-                  !templateQuery.isError &&
-                  editableBlocks.length === 0 && (
-                    <p className="text-center text-gray-500">No hay bloques.</p>
-                  )}
+                {!templateQuery.isLoading && !templateQuery.isError && (
+                  <>
+                    {editorType === "ui" ? (
+                      editableBlocks.length > 0 ? (
+                        <EditBlockRenderer blocks={editableBlocks} />
+                      ) : (
+                        <div className="text-center text-gray-500 py-10">
+                          <p className="mb-4">No hay bloques.</p>
+                          <AddBlockButton />
+                        </div>
+                      )
+                    ) : (
+                      <JsonEditor
+                        value={editableBlocks}
+                        onChange={(newJson) => setEditableBlocks(newJson)}
+                      />
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>

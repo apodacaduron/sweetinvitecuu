@@ -35,20 +35,12 @@ export default function Page() {
 
   function handleFormDialogChange(open: boolean) {
     setFormDialogOpen(open);
-
-    const isClosing = !open;
-    if (isClosing) {
-      setCurrentItem(null);
-    }
+    if (!open) setCurrentItem(null);
   }
 
   function handleDeleteDialogChange(open: boolean) {
     setDeleteDialogOpen(open);
-
-    const isClosing = !open;
-    if (isClosing) {
-      setCurrentItem(null);
-    }
+    if (!open) setCurrentItem(null);
   }
 
   function openEditor(item: Template) {
@@ -70,11 +62,13 @@ export default function Page() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader breadcrumbs={[
-              {
-                label: 'Templates',
-              },
-            ]} />
+        <SiteHeader
+          breadcrumbs={[
+            {
+              label: "Templates",
+            },
+          ]}
+        />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -89,7 +83,10 @@ export default function Page() {
 
                 {/* Create and edit dialog */}
                 <TemplateDialog
-                  onSuccess={() => setFormDialogOpen(false)}
+                  onSuccess={() => {
+                    setFormDialogOpen(false);
+                    setCurrentItem(null);
+                  }}
                   item={currentItem}
                   queryKeyGetter={queryKeyGetter}
                   dialogProps={{
@@ -104,7 +101,10 @@ export default function Page() {
               </div>
 
               <DeleteTemplateDialog
-                onSuccess={() => setDeleteDialogOpen(false)}
+                onSuccess={() => {
+                  setDeleteDialogOpen(false);
+                  setCurrentItem(null);
+                }}
                 queryKeyGetter={queryKeyGetter}
                 itemId={currentItem?.id}
                 itemName={currentItem?.name}

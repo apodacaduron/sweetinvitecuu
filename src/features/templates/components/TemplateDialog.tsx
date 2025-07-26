@@ -24,11 +24,11 @@ import { Template } from './TemplatesTable';
 const templateSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   slug: z.string().min(1, { message: "Slug is required" }),
-  seo_title: z.string().optional(),
-  seo_description: z.string().optional(),
-  og_image_url: z.url().optional(),
-  bgMusicUrl: z.url().optional(),
-  themeColor: z.string().optional(),
+  seo_title: z.string().optional().or(z.literal("")),
+  seo_description: z.string().optional().or(z.literal("")),
+  og_image_url: z.url().optional().or(z.literal("")),
+  music_url: z.url().optional().or(z.literal("")),
+  theme_color: z.string().optional().or(z.literal("")),
 });
 
 type TemplateSchema = z.infer<typeof templateSchema>;
@@ -51,8 +51,8 @@ export default function TemplateForm(props: Props) {
       seo_title: props.item?.seo_title ?? "",
       seo_description: props.item?.seo_description ?? "",
       og_image_url: props.item?.og_image_url ?? "",
-      bgMusicUrl: props.item?.music_url ?? "",
-      themeColor: props.item?.theme_color ?? "#000000",
+      music_url: props.item?.music_url ?? "",
+      theme_color: props.item?.theme_color ?? "#000000",
     },
   });
   const nameValue = form.watch("name");
@@ -67,7 +67,7 @@ export default function TemplateForm(props: Props) {
       form.setValue("og_image_url", publicUrl);
       toast.success("SEO image uploaded!");
     },
-    templateId: props.item?.id || null
+    templateId: props.item?.id || null,
   });
 
   const bgMusicUploader = useFileUploader({
@@ -76,14 +76,16 @@ export default function TemplateForm(props: Props) {
     filename: `background-music`,
     bucket: "media",
     onUpdate: ({ publicUrl }) => {
-      form.setValue("bgMusicUrl", publicUrl);
+      form.setValue("music_url", publicUrl);
       toast.success("Background music uploaded!");
     },
-    templateId: props.item?.id || null
+    templateId: props.item?.id || null,
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: Omit<Template, 'blocks' | 'id' | 'created_at' | 'search'>) => {
+    mutationFn: async (
+      data: Omit<Template, "blocks" | "id" | "created_at" | "search">
+    ) => {
       return supabase.from("templates").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
@@ -131,14 +133,14 @@ export default function TemplateForm(props: Props) {
     const isUpdating = Boolean(props.item?.id);
 
     // Map form fields to DB column names
-    const payload: Omit<Template, 'blocks' | 'id' | 'created_at' | 'search'> = {
+    const payload: Omit<Template, "blocks" | "id" | "created_at" | "search"> = {
       name: data.name,
       slug: data.slug,
       seo_title: data.seo_title ?? null,
       seo_description: data.seo_description ?? null,
       og_image_url: data.og_image_url ?? null,
-      music_url: data.bgMusicUrl ?? null,
-      theme_color: data.themeColor ?? null,
+      music_url: data.music_url ?? null,
+      theme_color: data.theme_color ?? null,
     };
 
     if (isUpdating) {
@@ -155,8 +157,8 @@ export default function TemplateForm(props: Props) {
       seo_title: props.item?.seo_title ?? "",
       seo_description: props.item?.seo_description ?? "",
       og_image_url: props.item?.og_image_url ?? "",
-      bgMusicUrl: props.item?.music_url ?? "",
-      themeColor: props.item?.theme_color ?? "#000000",
+      music_url: props.item?.music_url ?? "",
+      theme_color: props.item?.theme_color ?? "#000000",
     });
   }, [props.item, form]);
 
@@ -207,7 +209,7 @@ export default function TemplateForm(props: Props) {
 
             <FormField
               control={form.control}
-              name="themeColor"
+              name="theme_color"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Theme Color</FormLabel>
@@ -268,7 +270,7 @@ export default function TemplateForm(props: Props) {
             <FormItem>
               <FormLabel>
                 Background Music
-                {form.watch("bgMusicUrl") && (
+                {form.watch("music_url") && (
                   <span className="ml-2 text-xs text-green-600">
                     (Song already selected)
                   </span>

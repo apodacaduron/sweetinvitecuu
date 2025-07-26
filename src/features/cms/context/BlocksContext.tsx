@@ -37,7 +37,7 @@ export function useBlocks() {
   return context;
 }
 
-type BlockType =
+export type BlockType =
   | "circle-overlay"
   | "text"
   | "group"
@@ -75,36 +75,38 @@ function buildBlock<K extends keyof BlockDefinition>(
   };
 }
 
-export const blocksMap = {
-  "circle-overlay": buildBlock("circle-overlay", { blocks: [] }),
-  text: buildBlock("text", { content: "" }),
-  group: buildBlock("group", { blocks: [] }),
-  row: buildBlock("row", { blocks: [] }),
-  image: buildBlock("image", {
-    file: {
-      id: "",
-      fileName: "",
-      filePath: "",
-      publicUrl: "",
-      bucket: "",
-    },
-  }),
-  link: buildBlock("link", {
-    url: "",
-    target: "",
-    content: "",
-  }),
-  timeline: buildBlock("timeline", {
-    items: [],
-  }),
-  countdown: buildBlock("countdown", {
-    timestamp: "",
-  }),
-  gallery: buildBlock("gallery", {
-    images: [],
-  }),
-  rsvp: buildBlock("rsvp", null),
-} satisfies Record<keyof BlockDefinition, Block>;
+export function getBlocksMap(): Record<keyof BlockDefinition, Block> {
+  return {
+    "circle-overlay": buildBlock("circle-overlay", { blocks: [] }),
+    text: buildBlock("text", { content: "" }),
+    group: buildBlock("group", { blocks: [] }),
+    row: buildBlock("row", { blocks: [] }),
+    image: buildBlock("image", {
+      file: {
+        id: "",
+        fileName: "",
+        filePath: "",
+        publicUrl: "",
+        bucket: "",
+      },
+    }),
+    link: buildBlock("link", {
+      url: "",
+      target: "",
+      content: "",
+    }),
+    timeline: buildBlock("timeline", {
+      items: [],
+    }),
+    countdown: buildBlock("countdown", {
+      timestamp: "",
+    }),
+    gallery: buildBlock("gallery", {
+      images: [],
+    }),
+    rsvp: buildBlock("rsvp", null),
+  };
+}
 
 export type BlockTypeWithIcon = {
   type: BlockType;

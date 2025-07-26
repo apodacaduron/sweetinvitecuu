@@ -1,7 +1,7 @@
 import Case from 'case';
 import {
     CalendarIcon, Eye, EyeClosed, FileTextIcon, GridIcon, ImageIcon, LayersIcon, Link2Icon,
-    MapPinIcon, Plus, Trash, UserCheckIcon
+    MapPinIcon, Trash, UserCheckIcon
 } from 'lucide-react';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -12,7 +12,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { IconDotsVertical } from '@tabler/icons-react';
 
-import { Block, blockTypesWithIcons } from '../../context/BlocksContext';
+import { Block } from '../../context/BlocksContext';
+import { useEditableBlocks } from '../../context/EditableBlocksContext';
+import AddBlockButton from './AddBlockButton';
 
 type Props = {
   children: React.ReactNode;
@@ -47,12 +49,14 @@ export const blockTypeIconMap: Record<
 
 function BlockIcon({ type }: { type: string }) {
   const Icon = blockTypeIconMap[type] || blockTypeIconMap.default;
-  if (!Icon) return null
+  if (!Icon) return null;
 
   return <Icon className="h-5 w-5 text-gray-500" />;
 }
 
 export function EditBlockWrapper(props: Props) {
+  const { deleteBlockById } = useEditableBlocks();
+
   return (
     <div className={twMerge("relative space-y-4", props.className)}>
       <h4 className="font-semibold text-xl mb-1 flex items-center gap-2">
@@ -70,17 +74,7 @@ export function EditBlockWrapper(props: Props) {
         {props.children}
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button>
-            <Plus />
-            Add new block
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
-          {blockTypesWithIcons.map(block => <DropdownMenuItem><block.icon />{block.label}</DropdownMenuItem>)}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <AddBlockButton adjacentBlockId={props.block.id} mode="adjacent" />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -110,7 +104,7 @@ export function EditBlockWrapper(props: Props) {
             )}
           </DropdownMenuItem>
           {!props.block.original && (
-            <DropdownMenuItem variant='destructive'>
+            <DropdownMenuItem onClick={() => deleteBlockById(props.block.id)} variant="destructive">
               <Trash /> Delete
             </DropdownMenuItem>
           )}
