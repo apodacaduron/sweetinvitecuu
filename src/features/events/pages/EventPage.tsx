@@ -43,7 +43,7 @@ export default function EventPage({ params }: Props) {
 
   return (
     <Suspense fallback={<div>Loading template...</div>}>
-      <BlocksProvider parentData={eventQuery.data} origin="templates">
+      <BlocksProvider parentData={eventQuery.data} origin="events">
         <DynamicTemplate blocks={eventQuery.data?.blocks as unknown as Block[]} />
       </BlocksProvider>
     </Suspense>

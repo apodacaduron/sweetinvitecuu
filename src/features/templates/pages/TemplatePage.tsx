@@ -43,10 +43,12 @@ export default function TemplatePage({ params }: Props) {
   );
 
   return (
-    <BlocksProvider parentData={templateQuery.data} origin="templates">
-      <Suspense fallback={<div>Loading...</div>}>
-        <DynamicTemplate blocks={templateQuery.data.blocks as unknown as Block[]} />
-      </Suspense>
-    </BlocksProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlocksProvider parentData={templateQuery.data} origin="templates">
+        <DynamicTemplate
+          blocks={templateQuery.data.blocks as unknown as Block[]}
+        />
+      </BlocksProvider>
+    </Suspense>
   );
 }

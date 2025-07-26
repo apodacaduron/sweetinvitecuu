@@ -67,9 +67,7 @@ export default function TemplateForm(props: Props) {
       form.setValue("seoImage", publicUrl);
       toast.success("SEO image uploaded!");
     },
-    ...(origin === "events"
-      ? { eventId: props.item?.id || null }
-      : { templateId: props.item?.id || null }),
+    templateId: props.item?.id || null
   });
 
   const bgMusicUploader = useFileUploader({
@@ -81,9 +79,7 @@ export default function TemplateForm(props: Props) {
       form.setValue("bgMusicUrl", publicUrl);
       toast.success("Background music uploaded!");
     },
-    ...(origin === "events"
-      ? { eventId: props.item?.id || null }
-      : { templateId: props.item?.id || null }),
+    templateId: props.item?.id || null
   });
 
   const createMutation = useMutation({
