@@ -32,14 +32,15 @@ import { Event } from './EventsTable';
 const eventSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   slug: z.string(),
+  event_type: z.string().min(1, { message: "Event type is required" }),
   event_date: z.date({ error: "Event date is required" }),
   template_id: z.uuidv4(),
   client_id: z.uuidv4(),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
-  seoImage: z.url().optional(),
-  bgMusicUrl: z.url().optional(),
-  themeColor: z.string().optional(),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
+  og_image_url: z.url().optional(),
+  music_url: z.url().optional(),
+  theme_color: z.string().optional(),
 });
 
 type EventSchema = z.infer<typeof eventSchema>;
@@ -64,11 +65,12 @@ export default function EventForm(props: Props) {
         : new Date(),
       template_id: props.item?.template_id ?? "",
       client_id: props.item?.client_id ?? "",
-      seoTitle: props.item?.seo_title ?? "",
-      seoDescription: props.item?.seo_description ?? "",
-      seoImage: props.item?.og_image_url ?? "",
-      bgMusicUrl: props.item?.music_url ?? "",
-      themeColor: props.item?.theme_color ?? "#000000",
+      seo_title: props.item?.seo_title ?? "",
+      seo_description: props.item?.seo_description ?? "",
+      og_image_url: props.item?.og_image_url ?? "",
+      music_url: props.item?.music_url ?? "",
+      theme_color: props.item?.theme_color ?? "#000000",
+      event_type: props.item?.event_type ?? "",
     },
   });
   const nameValue = form.watch("title"); // 🔁 Reactively watch "name"
@@ -110,7 +112,8 @@ export default function EventForm(props: Props) {
   });
 
   const selectedTemplate = useMemo(
-    () => templatesQuery.data?.find((t) => t.id === form.getValues("template_id")),
+    () =>
+      templatesQuery.data?.find((t) => t.id === form.getValues("template_id")),
     [templatesQuery.data, form.watch("template_id")]
   );
 
@@ -126,10 +129,10 @@ export default function EventForm(props: Props) {
     filename: `seo-image`,
     bucket: "media",
     onUpdate: ({ publicUrl }) => {
-      form.setValue("seoImage", publicUrl);
+      form.setValue("og_image_url", publicUrl);
       toast.success("SEO image uploaded!");
     },
-    eventId: props.item?.id || null
+    eventId: props.item?.id || null,
   });
 
   const bgMusicUploader = useFileUploader({
@@ -138,14 +141,19 @@ export default function EventForm(props: Props) {
     filename: `background-music`,
     bucket: "media",
     onUpdate: ({ publicUrl }) => {
-      form.setValue("bgMusicUrl", publicUrl);
+      form.setValue("music_url", publicUrl);
       toast.success("Background music uploaded!");
     },
-    eventId: props.item?.id || null
+    eventId: props.item?.id || null,
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: Omit<Event, 'blocks' | 'id' | 'created_at' | 'created_by' | 'search'>) => {
+    mutationFn: async (
+      data: Omit<
+        Event,
+        "blocks" | "id" | "created_at" | "created_by" | "search"
+      >
+    ) => {
       return supabase.from("events").insert(data).throwOnError();
     },
     async onSuccess(_, variables) {
@@ -196,11 +204,11 @@ export default function EventForm(props: Props) {
     const payload = {
       ...data,
       event_date: data.event_date.toISOString(),
-      seo_title: data.seoTitle ?? null,
-      seo_description: data.seoDescription ?? null,
-      og_image_url: data.seoImage ?? null,
-      music_url: data.bgMusicUrl ?? null,
-      theme_color: data.themeColor ?? null,
+      seo_title: data.seo_title ?? null,
+      seo_description: data.seo_description ?? null,
+      og_image_url: data.og_image_url ?? null,
+      music_url: data.music_url ?? null,
+      theme_color: data.theme_color ?? null,
     };
 
     if (isUpdating) {
@@ -219,6 +227,7 @@ export default function EventForm(props: Props) {
         : new Date(),
       template_id: props.item?.template_id ?? "",
       client_id: props.item?.client_id ?? "",
+      event_type: props.item?.event_type ?? "",
     });
   }, [props.item, form]);
 
@@ -228,14 +237,17 @@ export default function EventForm(props: Props) {
 
   return (
     <Dialog {...props.dialogProps}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {props.item?.id ? "Update event" : "Add new event"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 pt-2"
+          >
             <FormField
               control={form.control}
               name="title"
@@ -264,14 +276,91 @@ export default function EventForm(props: Props) {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="event_type"
+              render={({ field }) => {
+                const eventTypes = [
+                  { label: "Wedding", value: "wedding" },
+                  { label: "Birthday", value: "birthday" },
+                  { label: "Baby Shower", value: "baby-shower" },
+                  { label: "Baptism", value: "baptism" },
+                  { label: "Quinceañera", value: "quinceañera" },
+                  { label: "Graduation", value: "graduation" },
+                  { label: "Anniversary", value: "anniversary" },
+                  { label: "Engagement", value: "engagement" },
+                  { label: "Corporate", value: "corporate" },
+                  { label: "Holiday", value: "holiday" },
+                  { label: "Funeral", value: "funeral" },
+                  { label: "Other", value: "other" },
+                ];
+                const selectedLabel = eventTypes.find(
+                  (t) => t.value === field.value
+                )?.label;
+
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Event Type</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="justify-between w-full"
+                          >
+                            {selectedLabel ?? "Select event type"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search event type..."
+                            className="h-9"
+                          />
+                          <CommandList>
+                            <CommandEmpty>No event type found.</CommandEmpty>
+                            <CommandGroup>
+                              {eventTypes.map((type) => (
+                                <CommandItem
+                                  key={type.value}
+                                  value={type.label}
+                                  onSelect={() => field.onChange(type.value)}
+                                >
+                                  {type.label}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      field.value === type.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
             {/* Event Date + Time Picker */}
             <FormField
               control={form.control}
               name="event_date"
               render={({ field }) => {
                 const date = field.value ? new Date(field.value) : undefined;
-                const hours = date?.getHours().toString().padStart(2, "0") ?? "00";
-                const minutes = date?.getMinutes().toString().padStart(2, "0") ?? "00";
+                const hours =
+                  date?.getHours().toString().padStart(2, "0") ?? "00";
+                const minutes =
+                  date?.getMinutes().toString().padStart(2, "0") ?? "00";
 
                 return (
                   <FormItem>
@@ -281,7 +370,10 @@ export default function EventForm(props: Props) {
                         <Popover open={eventOpen} onOpenChange={setEventOpen}>
                           <PopoverTrigger asChild>
                             <FormControl>
-                              <Button variant="outline" className="justify-between font-normal">
+                              <Button
+                                variant="outline"
+                                className="justify-between font-normal"
+                              >
                                 {date ? format(date, "PPP") : "Select date"}
                                 <ChevronDownIcon />
                               </Button>
@@ -295,7 +387,11 @@ export default function EventForm(props: Props) {
                               onSelect={(selectedDate) => {
                                 if (!selectedDate) return;
                                 const updated = new Date(selectedDate);
-                                if (date) updated.setHours(date.getHours(), date.getMinutes());
+                                if (date)
+                                  updated.setHours(
+                                    date.getHours(),
+                                    date.getMinutes()
+                                  );
                                 field.onChange(updated);
                                 setEventOpen(false);
                               }}
@@ -315,7 +411,9 @@ export default function EventForm(props: Props) {
                           step="60"
                           value={`${hours}:${minutes}`}
                           onChange={(e) => {
-                            const [h, m] = e.target.value.split(":").map(Number);
+                            const [h, m] = e.target.value
+                              .split(":")
+                              .map(Number);
                             const updated = new Date(field.value || new Date());
                             updated.setHours(h ?? 0, m);
                             field.onChange(updated);
@@ -340,7 +438,11 @@ export default function EventForm(props: Props) {
                   <Popover open={templateOpen} onOpenChange={setTemplateOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button variant="outline" role="combobox" className="justify-between w-full">
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="justify-between w-full"
+                        >
                           {selectedTemplate?.name ?? "Select a template"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                         </Button>
@@ -367,7 +469,14 @@ export default function EventForm(props: Props) {
                                 }}
                               >
                                 {template.name}
-                                <Check className={cn("ml-auto h-4 w-4", template.id === form.watch("template_id") ? "opacity-100" : "opacity-0")} />
+                                <Check
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    template.id === form.watch("template_id")
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -390,7 +499,11 @@ export default function EventForm(props: Props) {
                   <Popover open={clientOpen} onOpenChange={setClientOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button variant="outline" role="combobox" className="justify-between w-full">
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="justify-between w-full"
+                        >
                           {selectedClient?.name ?? "Select a client"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                         </Button>
@@ -410,14 +523,21 @@ export default function EventForm(props: Props) {
                             {clientsQuery.data?.map((client) => (
                               <CommandItem
                                 key={client.id}
-                                value={client.name ?? ''}
+                                value={client.name ?? ""}
                                 onSelect={() => {
                                   form.setValue("client_id", client.id);
                                   setClientOpen(false);
                                 }}
                               >
                                 {client.name}
-                                <Check className={cn("ml-auto h-4 w-4", client.id === form.watch("client_id") ? "opacity-100" : "opacity-0")} />
+                                <Check
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    client.id === form.watch("client_id")
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -433,7 +553,7 @@ export default function EventForm(props: Props) {
             {/* Misc Fields */}
             <FormField
               control={form.control}
-              name="themeColor"
+              name="theme_color"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Theme Color</FormLabel>
@@ -447,7 +567,7 @@ export default function EventForm(props: Props) {
 
             <FormField
               control={form.control}
-              name="seoTitle"
+              name="seo_title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Social Share Title</FormLabel>
@@ -461,7 +581,7 @@ export default function EventForm(props: Props) {
 
             <FormField
               control={form.control}
-              name="seoDescription"
+              name="seo_description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Social Share Description</FormLabel>
@@ -476,21 +596,43 @@ export default function EventForm(props: Props) {
             <FormItem>
               <FormLabel>
                 Social Share Image
-                {form.watch("seoImage") && <span className="ml-2 text-xs text-green-600">(Image already selected)</span>}
+                {form.watch("og_image_url") && (
+                  <span className="ml-2 text-xs text-green-600">
+                    (Image already selected)
+                  </span>
+                )}
               </FormLabel>
-              <Input type="file" accept="image/*" onChange={seoImageUploader.handleFileChange} />
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={seoImageUploader.handleFileChange}
+              />
             </FormItem>
 
             <FormItem>
               <FormLabel>
                 Background Music
-                {form.watch("bgMusicUrl") && <span className="ml-2 text-xs text-green-600">(Song already selected)</span>}
+                {form.watch("music_url") && (
+                  <span className="ml-2 text-xs text-green-600">
+                    (Song already selected)
+                  </span>
+                )}
               </FormLabel>
-              <Input type="file" accept="audio/*" onChange={bgMusicUploader.handleFileChange} />
+              <Input
+                type="file"
+                accept="audio/*"
+                onChange={bgMusicUploader.handleFileChange}
+              />
             </FormItem>
 
-            <Button type="submit" className="w-full mt-4" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting && <Loader2Icon className="animate-spin" />}
+            <Button
+              type="submit"
+              className="w-full mt-4"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting && (
+                <Loader2Icon className="animate-spin" />
+              )}
               Save
             </Button>
           </form>

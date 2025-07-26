@@ -24,9 +24,9 @@ import { Template } from './TemplatesTable';
 const templateSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   slug: z.string().min(1, { message: "Slug is required" }),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
-  seoImage: z.url().optional(),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
+  og_image_url: z.url().optional(),
   bgMusicUrl: z.url().optional(),
   themeColor: z.string().optional(),
 });
@@ -48,9 +48,9 @@ export default function TemplateForm(props: Props) {
     defaultValues: {
       name: props.item?.name ?? "",
       slug: props.item?.slug ?? "",
-      seoTitle: props.item?.seo_title ?? "",
-      seoDescription: props.item?.seo_description ?? "",
-      seoImage: props.item?.og_image_url ?? "",
+      seo_title: props.item?.seo_title ?? "",
+      seo_description: props.item?.seo_description ?? "",
+      og_image_url: props.item?.og_image_url ?? "",
       bgMusicUrl: props.item?.music_url ?? "",
       themeColor: props.item?.theme_color ?? "#000000",
     },
@@ -64,7 +64,7 @@ export default function TemplateForm(props: Props) {
     filename: `seo-image`,
     bucket: "media",
     onUpdate: ({ publicUrl }) => {
-      form.setValue("seoImage", publicUrl);
+      form.setValue("og_image_url", publicUrl);
       toast.success("SEO image uploaded!");
     },
     templateId: props.item?.id || null
@@ -134,9 +134,9 @@ export default function TemplateForm(props: Props) {
     const payload: Omit<Template, 'blocks' | 'id' | 'created_at' | 'search'> = {
       name: data.name,
       slug: data.slug,
-      seo_title: data.seoTitle ?? null,
-      seo_description: data.seoDescription ?? null,
-      og_image_url: data.seoImage ?? null,
+      seo_title: data.seo_title ?? null,
+      seo_description: data.seo_description ?? null,
+      og_image_url: data.og_image_url ?? null,
       music_url: data.bgMusicUrl ?? null,
       theme_color: data.themeColor ?? null,
     };
@@ -152,9 +152,9 @@ export default function TemplateForm(props: Props) {
     form.reset({
       name: props.item?.name ?? "",
       slug: props.item?.slug ?? "",
-      seoTitle: props.item?.seo_title ?? "",
-      seoDescription: props.item?.seo_description ?? "",
-      seoImage: props.item?.og_image_url ?? "",
+      seo_title: props.item?.seo_title ?? "",
+      seo_description: props.item?.seo_description ?? "",
+      og_image_url: props.item?.og_image_url ?? "",
       bgMusicUrl: props.item?.music_url ?? "",
       themeColor: props.item?.theme_color ?? "#000000",
     });
@@ -222,7 +222,7 @@ export default function TemplateForm(props: Props) {
             {/* SEO fields */}
             <FormField
               control={form.control}
-              name="seoTitle"
+              name="seo_title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Social Share Title</FormLabel>
@@ -236,7 +236,7 @@ export default function TemplateForm(props: Props) {
 
             <FormField
               control={form.control}
-              name="seoDescription"
+              name="seo_description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Social Share Description</FormLabel>
@@ -251,7 +251,7 @@ export default function TemplateForm(props: Props) {
             <FormItem>
               <FormLabel>
                 Social Share Image
-                {form.watch("seoImage") && (
+                {form.watch("og_image_url") && (
                   <span className="ml-2 text-xs text-green-600">
                     (Image already selected)
                   </span>

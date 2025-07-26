@@ -48,6 +48,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           event_date: string | null
+          event_type: string | null
           id: string
           music_url: string | null
           og_image_url: string | null
@@ -64,6 +65,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           event_date?: string | null
+          event_type?: string | null
           id?: string
           music_url?: string | null
           og_image_url?: string | null
@@ -80,6 +82,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           event_date?: string | null
+          event_type?: string | null
           id?: string
           music_url?: string | null
           og_image_url?: string | null
