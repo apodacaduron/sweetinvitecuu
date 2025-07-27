@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { IconDotsVertical } from '@tabler/icons-react';
 
-import { Block } from '../../context/BlocksContext';
+import { Block, getBlocksMap } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
 import AddBlockButton from './AddBlockButton';
 
@@ -55,7 +55,7 @@ function BlockIcon({ type }: { type: string }) {
 }
 
 export function EditBlockWrapper(props: Props) {
-  const { deleteBlockById } = useEditableBlocks();
+  const { deleteBlockById, wrapBlockById } = useEditableBlocks();
 
   return (
     <div className={twMerge("relative space-y-4", props.className)}>
@@ -89,7 +89,35 @@ export function EditBlockWrapper(props: Props) {
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => wrapBlockById(props.block.id, (child) => {
+              const newRowBlock = getBlocksMap()['group']
+              newRowBlock.original = false
+
+              if (newRowBlock.properties && 'blocks' in newRowBlock.properties) {
+                newRowBlock.properties.blocks.push(child)
+              }
+
+              return newRowBlock
+            })}
+          >
+            Wrap in Group
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => wrapBlockById(props.block.id, (child) => {
+              const newRowBlock = getBlocksMap()['row']
+              newRowBlock.original = false
+
+              if (newRowBlock.properties && 'blocks' in newRowBlock.properties) {
+                newRowBlock.properties.blocks.push(child)
+              }
+
+              return newRowBlock
+            })}
+          >
+            Wrap in Row
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => props.onClickVisibility(!props.block.visible)}
           >
