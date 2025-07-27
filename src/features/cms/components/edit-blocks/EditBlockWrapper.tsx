@@ -1,9 +1,9 @@
 import Case from 'case';
 import {
-    CalendarIcon, Eye, EyeClosed, FileTextIcon, GridIcon, ImageIcon, LayersIcon, Link2Icon,
-    MapPinIcon, Trash, UserCheckIcon
+    CalendarIcon, Columns, Eye, EyeClosed, FileTextIcon, GridIcon, ImageIcon, LayersIcon, Link2Icon,
+    MapPinIcon, Pencil, Rows, Trash, UserCheckIcon
 } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { IconDotsVertical } from '@tabler/icons-react';
 import { Block, getBlocksMap } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
 import AddBlockButton from './AddBlockButton';
+import EditBlockDetailsDialog from './EditBlockDetailsDialog';
 
 type Props = {
   children: React.ReactNode;
@@ -56,6 +57,7 @@ function BlockIcon({ type }: { type: string }) {
 
 export function EditBlockWrapper(props: Props) {
   const { deleteBlockById, wrapBlockById } = useEditableBlocks();
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
   return (
     <div className={twMerge("relative space-y-4", props.className)}>
@@ -76,6 +78,15 @@ export function EditBlockWrapper(props: Props) {
 
       <AddBlockButton adjacentBlockId={props.block.id} mode="adjacent" />
 
+      <EditBlockDetailsDialog
+        item={props.block}
+        dialogProps={{
+          open: detailsDialogOpen,
+          onOpenChange: setDetailsDialogOpen,
+        }}
+        onSuccess={() => setDetailsDialogOpen(false)}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -90,33 +101,46 @@ export function EditBlockWrapper(props: Props) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => wrapBlockById(props.block.id, (child) => {
-              const newRowBlock = getBlocksMap()['group']
-              newRowBlock.original = false
-
-              if (newRowBlock.properties && 'blocks' in newRowBlock.properties) {
-                newRowBlock.properties.blocks.push(child)
-              }
-
-              return newRowBlock
-            })}
-          >
-            Wrap in Group
+          <DropdownMenuItem onClick={() => setDetailsDialogOpen(true)}>
+            <Pencil /> Edit block details
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => wrapBlockById(props.block.id, (child) => {
-              const newRowBlock = getBlocksMap()['row']
-              newRowBlock.original = false
+            onClick={() =>
+              wrapBlockById(props.block.id, (child) => {
+                const newRowBlock = getBlocksMap()["group"];
+                newRowBlock.original = false;
 
-              if (newRowBlock.properties && 'blocks' in newRowBlock.properties) {
-                newRowBlock.properties.blocks.push(child)
-              }
+                if (
+                  newRowBlock.properties &&
+                  "blocks" in newRowBlock.properties
+                ) {
+                  newRowBlock.properties.blocks.push(child);
+                }
 
-              return newRowBlock
-            })}
+                return newRowBlock;
+              })
+            }
           >
-            Wrap in Row
+            <Rows /> Wrap in Group
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              wrapBlockById(props.block.id, (child) => {
+                const newRowBlock = getBlocksMap()["row"];
+                newRowBlock.original = false;
+
+                if (
+                  newRowBlock.properties &&
+                  "blocks" in newRowBlock.properties
+                ) {
+                  newRowBlock.properties.blocks.push(child);
+                }
+
+                return newRowBlock;
+              })
+            }
+          >
+            <Columns /> Wrap in Row
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => props.onClickVisibility(!props.block.visible)}
@@ -132,7 +156,10 @@ export function EditBlockWrapper(props: Props) {
             )}
           </DropdownMenuItem>
           {!props.block.original && (
-            <DropdownMenuItem onClick={() => deleteBlockById(props.block.id)} variant="destructive">
+            <DropdownMenuItem
+              onClick={() => deleteBlockById(props.block.id)}
+              variant="destructive"
+            >
               <Trash /> Delete
             </DropdownMenuItem>
           )}

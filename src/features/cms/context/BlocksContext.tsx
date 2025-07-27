@@ -2,7 +2,7 @@ import {
     Circle, Columns, GalleryHorizontal, Hourglass, Image, LayoutList, Link, LucideIcon, MailPlus,
     Rows, Text
 } from 'lucide-react';
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, CSSProperties, ReactNode, useContext } from 'react';
 
 import { Tables } from '../../../../database.types';
 
@@ -54,6 +54,7 @@ export interface BlockBase<T> {
   tag: string;
   type: BlockType;
   class: string;
+  style: CSSProperties;
   visible: boolean;
   original: boolean;
   properties: T;
@@ -62,13 +63,14 @@ export interface BlockBase<T> {
 function buildBlock<K extends keyof BlockDefinition>(
   type: K,
   properties: BlockDefinition[K],
-  overrides?: Partial<Pick<BlockBase<BlockDefinition[K]>, "tag" | "class" | "visible" | "original">>
+  overrides?: Partial<Pick<BlockBase<BlockDefinition[K]>, "tag" | "class" | "visible" | "original" | 'style'>>
 ): BlockBase<BlockDefinition[K]> & { type: K } {
   return {
     id: crypto.randomUUID(),
     type,
     tag: overrides?.tag ?? "",
     class: overrides?.class ?? "",
+    style: overrides?.style ?? {},
     visible: overrides?.visible ?? true,
     original: overrides?.original ?? true,
     properties,
