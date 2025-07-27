@@ -4,6 +4,8 @@ import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
+import { ThemeToggle } from './ThemeToggle';
+
 type Props = {
   breadcrumbs: { href?: string; label: string; }[]
   actions?: React.ReactNode
@@ -37,6 +39,7 @@ export function SiteHeader(props: Props) {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {props.actions}
+          <ThemeToggle />
         </div>
       </div>
     </header>
