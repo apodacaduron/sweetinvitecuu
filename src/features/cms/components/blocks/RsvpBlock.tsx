@@ -16,7 +16,9 @@ import { supabase } from '@/lib/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 
-import { BlockBase, RsvpProperties, useBlocks } from '../../context/BlocksContext';
+import {
+    BlockBase, resolveClassNames, RsvpProperties, useBlocks
+} from '../../context/BlocksContext';
 
 const rsvpSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -80,7 +82,7 @@ export default function RsvpBlock(props: BlockBase<RsvpProperties> & {
   }
 
   return (
-    <div id={props.id} className={props.pageStyles[props.class]} data-type={props.type}>
+    <div id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
           <FormField

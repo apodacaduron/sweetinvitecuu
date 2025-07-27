@@ -246,3 +246,10 @@ export type GalleryProperties = {
 };
 
 export type RsvpProperties = null;
+
+export function resolveClassNames(classNames: string, styles: Record<string, string>) {
+  return classNames.trim()
+    .split(' ')
+    .map(cls => styles[cls] || cls)
+    .join(' ');
+}

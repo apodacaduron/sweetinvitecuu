@@ -1,4 +1,4 @@
-import { BlockBase, ImageProperties } from '../../context/BlocksContext';
+import { BlockBase, ImageProperties, resolveClassNames } from '../../context/BlocksContext';
 
 export default function ImageBlock(
   props: BlockBase<ImageProperties> & {
@@ -10,7 +10,7 @@ export default function ImageBlock(
   return (
     <img
       id={props.id}
-      className={props.pageStyles[props.class]}
+      className={resolveClassNames(props.class, props.pageStyles)} style={props.style}
       data-type={props.type}
       src={props.properties.file.publicUrl || undefined}
       alt="Image"

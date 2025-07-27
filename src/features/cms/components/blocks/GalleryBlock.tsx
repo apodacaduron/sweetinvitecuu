@@ -7,7 +7,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { BlockBase, GalleryProperties } from '../../context/BlocksContext';
+import { BlockBase, GalleryProperties, resolveClassNames } from '../../context/BlocksContext';
 
 export default function GalleryBlock(props: BlockBase<GalleryProperties> & {
     pageStyles: {
@@ -16,7 +16,7 @@ export default function GalleryBlock(props: BlockBase<GalleryProperties> & {
   }) {
   return (
       <Swiper
-        id={props.id} className={props.pageStyles[props.class]} data-type={props.type}
+        id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}
         modules={[Navigation, Pagination]}
         loop
         pagination={{ clickable: true }}

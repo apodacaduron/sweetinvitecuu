@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 
-import { BlockBase, LinkProperties } from '../../context/BlocksContext';
+import { BlockBase, LinkProperties, resolveClassNames } from '../../context/BlocksContext';
 
 export default function LinkBlock(props: BlockBase<LinkProperties> & {
     pageStyles: {
@@ -9,7 +9,7 @@ export default function LinkBlock(props: BlockBase<LinkProperties> & {
   }) {
   return (
     <Button asChild>
-      <a id={props.id} className={props.pageStyles[props.class]} data-type={props.type} href={props.properties.url} target={props.properties.target ?? '_blank'}>
+      <a id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type} href={props.properties.url} target={props.properties.target ?? '_blank'}>
         {props.properties.content}
       </a>
     </Button>

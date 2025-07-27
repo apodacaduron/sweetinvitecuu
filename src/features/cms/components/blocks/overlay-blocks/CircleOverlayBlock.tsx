@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import {
-    BlockBase, CircleOverlayProperties, useBlocks
+    BlockBase, CircleOverlayProperties, resolveClassNames, useBlocks
 } from '@/features/cms/context/BlocksContext';
 
 import BlockRenderer from '../BlockRenderer';
@@ -43,7 +43,7 @@ export default function CircleOverlayBlock(props: BlockBase<CircleOverlayPropert
   return (
     <div
       ref={overlayRef}
-      className={`circle-overlay-block ${isZoomed ? 'zoomed' : ''}`}
+      className={resolveClassNames(`${props.class} circle-overlay-block ${isZoomed ? 'zoomed' : ''}`, props.pageStyles)}
       onTransitionEnd={onTransitionEnd}
       onClick={handleButtonClick}
     >

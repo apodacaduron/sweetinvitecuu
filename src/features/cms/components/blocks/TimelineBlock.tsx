@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 
-import { BlockBase, TimelineProperties } from '../../context/BlocksContext';
+import { BlockBase, resolveClassNames, TimelineProperties } from '../../context/BlocksContext';
 
 export default function TimelineBlock(props: BlockBase<TimelineProperties> & {
     pageStyles: {
@@ -10,7 +10,7 @@ export default function TimelineBlock(props: BlockBase<TimelineProperties> & {
   return (
     <div
       id={props.id}
-      className={props.pageStyles[props.class]}
+      className={resolveClassNames(props.class, props.pageStyles)} style={props.style}
       data-type={props.type}
     >
       {props.properties.items.map((item, index) => {

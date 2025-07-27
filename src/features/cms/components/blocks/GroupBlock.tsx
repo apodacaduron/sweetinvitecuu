@@ -1,4 +1,4 @@
-import { BlockBase, GroupProperties } from '../../context/BlocksContext';
+import { BlockBase, GroupProperties, resolveClassNames } from '../../context/BlocksContext';
 import BlockRenderer from './BlockRenderer';
 
 export default function GroupBlock(props: BlockBase<GroupProperties> & {
@@ -7,7 +7,7 @@ export default function GroupBlock(props: BlockBase<GroupProperties> & {
     };
   }) {
   return (
-    <div id={props.id} className={props.pageStyles[props.class]} data-type={props.type}>
+    <div id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
       <BlockRenderer pageStyles={props.pageStyles} blocks={props.properties.blocks} />
     </div>
   );

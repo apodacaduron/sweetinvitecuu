@@ -1,4 +1,4 @@
-import { BlockBase, RowProperties } from '../../context/BlocksContext';
+import { BlockBase, resolveClassNames, RowProperties } from '../../context/BlocksContext';
 import BlockRenderer from './BlockRenderer';
 
 export default function RowBlock(props: BlockBase<RowProperties> & {
@@ -7,7 +7,7 @@ export default function RowBlock(props: BlockBase<RowProperties> & {
     };
   }) {
   return (
-    <div id={props.id} className={props.pageStyles[props.class]} data-type={props.type}>
+    <div id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
       <BlockRenderer pageStyles={props.pageStyles} blocks={props.properties.blocks} />
     </div>
   );
