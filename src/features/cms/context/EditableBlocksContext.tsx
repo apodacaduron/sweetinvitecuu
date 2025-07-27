@@ -1,4 +1,5 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import debounce from 'lodash.debounce';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 
 import { Tables } from '../../../../database.types';
 import { Block } from './BlocksContext';
@@ -12,7 +13,10 @@ type EditableBlocksContextType = {
     newBlock: Block,
     mode: "adjacent" | "inside"
   ) => void;
-  wrapBlockById: (targetId: string, wrapperFactory: (child: Block) => Block) => void;
+  wrapBlockById: (
+    targetId: string,
+    wrapperFactory: (child: Block) => Block
+  ) => void;
   pushBlock: (newBlock: Block) => void;
   deleteBlockById: (targetId: string) => void;
   setEditableBlocks: React.Dispatch<React.SetStateAction<Block[]>>;
@@ -167,10 +171,17 @@ export function EditableBlocksProvider(props: Props) {
     );
   };
 
+  const debouncedUpdateBlock = useMemo(() => {
+    return debounce((updatedBlock: Block) => {
+      props.setEditableBlocks((prevBlocks: Block[]) =>
+        updateBlockById(prevBlocks, updatedBlock)
+      );
+    }, 300); // Adjust delay (ms) as needed
+  }, [props.setEditableBlocks]);
+
+  // Ensure stable reference for context consumers
   const updateBlock = (updatedBlock: Block) => {
-    props.setEditableBlocks((prevBlocks: Block[]) =>
-      updateBlockById(prevBlocks, updatedBlock)
-    );
+    debouncedUpdateBlock(updatedBlock);
   };
 
   const pushBlockById = (

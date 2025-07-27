@@ -1,7 +1,8 @@
 "use client";
 
+import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { Block, BlocksProvider } from '@/features/cms/context/BlocksContext';
 import { supabase } from '@/lib/supabase';
@@ -14,6 +15,12 @@ type Props = {
 export default function TemplatePage({ params }: Props) {
   const { slug } = React.use(params);
   const templateSlug = slug?.toString();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    // Force light theme
+    setTheme("light");
+  }, [setTheme]);
 
   const templateQuery = useQuery({
     queryKey: ["template", { slug: templateSlug }],

@@ -1,7 +1,8 @@
 "use client";
 
+import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { Block, BlocksProvider } from '@/features/cms/context/BlocksContext';
 import { supabase } from '@/lib/supabase';
@@ -14,6 +15,12 @@ type Props = {
 export default function EventPage({ params }: Props) {
   const { slug } = React.use(params);
   const eventSlug = slug?.toString();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    // Force light theme
+    setTheme("light");
+  }, [setTheme]);
 
   const eventQuery = useQuery({
     queryKey: ["event", { slug: eventSlug }],
@@ -44,7 +51,9 @@ export default function EventPage({ params }: Props) {
   return (
     <Suspense fallback={<div>Loading template...</div>}>
       <BlocksProvider parentData={eventQuery.data} origin="events">
-        <DynamicTemplate blocks={eventQuery.data?.blocks as unknown as Block[]} />
+        <DynamicTemplate
+          blocks={eventQuery.data?.blocks as unknown as Block[]}
+        />
       </BlocksProvider>
     </Suspense>
   );
