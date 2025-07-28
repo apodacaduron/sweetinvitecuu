@@ -40,6 +40,7 @@ export function useBlocks() {
 export type BlockType =
   | "circle-overlay"
   | "text"
+  | "text-query"
   | "group"
   | "image"
   | "row"
@@ -63,7 +64,12 @@ export interface BlockBase<T> {
 function buildBlock<K extends keyof BlockDefinition>(
   type: K,
   properties: BlockDefinition[K],
-  overrides?: Partial<Pick<BlockBase<BlockDefinition[K]>, "tag" | "class" | "visible" | "original" | 'style'>>
+  overrides?: Partial<
+    Pick<
+      BlockBase<BlockDefinition[K]>,
+      "tag" | "class" | "visible" | "original" | "style"
+    >
+  >
 ): BlockBase<BlockDefinition[K]> & { type: K } {
   return {
     id: crypto.randomUUID(),
@@ -81,6 +87,7 @@ export function getBlocksMap(): Record<keyof BlockDefinition, Block> {
   return {
     "circle-overlay": buildBlock("circle-overlay", { blocks: [] }),
     text: buildBlock("text", { content: "" }),
+    "text-query": buildBlock("text-query", { content: "", query: "" }),
     group: buildBlock("group", { blocks: [] }),
     row: buildBlock("row", { blocks: [] }),
     image: buildBlock("image", {
@@ -128,6 +135,11 @@ export const blockTypesWithIcons: BlockTypeWithIcon[] = [
     icon: Text,
   },
   {
+    type: "text-query",
+    label: "Text query",
+    icon: Text,
+  },
+  {
     type: "group",
     label: "Group",
     icon: Rows,
@@ -170,12 +182,13 @@ export const blockTypesWithIcons: BlockTypeWithIcon[] = [
 ];
 
 export type Block = {
-  [K in keyof BlockDefinition]: BlockBase<BlockDefinition[K]> & { type: K }
+  [K in keyof BlockDefinition]: BlockBase<BlockDefinition[K]> & { type: K };
 }[keyof BlockDefinition];
 
 type BlockDefinition = {
   "circle-overlay": CircleOverlayProperties;
   text: TextProperties;
+  "text-query": TextQueryProperties;
   group: GroupProperties;
   row: RowProperties;
   image: ImageProperties;
@@ -196,6 +209,11 @@ export type RowProperties = {
 
 export type TextProperties = {
   content: string;
+};
+
+export type TextQueryProperties = {
+  content: string;
+  query?: string;
 };
 
 export type CircleOverlayProperties = {
@@ -247,9 +265,15 @@ export type GalleryProperties = {
 
 export type RsvpProperties = null;
 
-export function resolveClassNames(classNames: string, styles: Record<string, string>) {
-  return classNames.trim()
-    .split(' ')
-    .map(cls => styles[cls] || cls)
-    .join(' ');
+export function resolveClassNames(
+  classNames: string,
+  styles: Record<string, string>
+) {
+  if (!classNames) return;
+
+  return classNames
+    .trim()
+    .split(" ")
+    .map((cls) => styles[cls] || cls)
+    .join(" ");
 }

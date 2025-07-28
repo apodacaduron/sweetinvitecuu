@@ -2,6 +2,7 @@
   background-image: url("https://lwotpjzdnsbqfetmucxp.supabase.co/storage/v1/object/public/assets/minimal-moon/white-simple-textured-design-background.jpg");
   background-size: cover;
   font-family: var(--font-old-standard);
+  text-align: center;
 }
 
 .cover {
@@ -13,12 +14,10 @@
 
 .parents {
   display: flex;
-  text-align: center;
 }
 
 .company-of-our-parents {
   text-transform: uppercase;
-  text-align: center;
   font-size: clamp(1.18rem, 0.1514rem + 4.5714vw, 1.58rem);
   padding: 0 16px;
 }
@@ -31,12 +30,10 @@
 }
 
 .we-invite-you {
-  text-align: center;
   font-size: clamp(0.89rem, -0.1643rem + 4.6857vw, 1.3rem);
 }
 
 .couple-name {
-  text-align: center;
   font-size: 4rem;
   line-height: 80%;
   font-family: var(--font-dancing-script);
@@ -54,7 +51,6 @@
 }
 
 .form-section {
-  text-align: center;
   padding: 64px 24px;
   background: #ffffff;
   background: linear-gradient(
@@ -86,7 +82,6 @@
 }
 
 .event-day-container {
-  text-align: center;
 }
 
 .honor-to-invite {
@@ -95,7 +90,6 @@
 
 .church,
 .reception {
-  text-align: center;
   font-size: clamp(1rem, 8vw, 2.5rem);
   line-height: 100%;
   margin-bottom: 32;
@@ -135,7 +129,6 @@
 }
 
 .liz-y-alejandro-overlay {
-  text-align: center;
   font-size: clamp(3rem, 20vw, 4rem);
   line-height: 80%;
   font-family: var(--font-dancing-script);
@@ -143,31 +136,22 @@
 }
 
 .countdown-group {
-  text-align: center;
   margin-bottom: 64px;
   padding: 32px;
   color: var(--color-primary-foreground);
 }
 
-.group-bg {
+.black-bg {
   display: flex;
   flex-direction: column;
   gap: 24px;
   background-color: var(--color-primary);
-    padding-top: 32px;
+  padding-top: 32px;
   padding-bottom: 32px;
   border-radius: 24px;
+  color: white;
 }
 
-.countdown-bg {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  background-color: var(--color-primary);
-    padding-top: 32px;
-  padding-bottom: 32px;
-  border-radius: 24px;
-}
 .faltan {
   font-size: clamp(2rem, 15vw, 3rem);
 }
@@ -182,11 +166,41 @@
   gap: 16px;
   justify-content: center;
   line-height: 50%;
-  text-align: center;
   width: 80%;
   margin: 0 auto;
 }
 
 .countdown span {
   font-size: clamp(0.8rem, 5vw, 1rem);
+}
+
+.regalos {
+  margin-top: 64px;
+  margin-bottom: 64px;
+}
+.regalos-title {
+  font-size: clamp(2.5rem, 13vw, 4rem);
+}
+.regalos-description {
+  font-size: clamp(1rem, 4vw, 2rem);
+}
+.regalos-suggestion {
+  font-size: clamp(1rem, 4vw, 2rem);
+  margin-top: 24px;
+}
+
+.reservation {
+  padding: 32px;
+}
+.reservation-title {
+  font-size: clamp(1rem, 10vw, 3.5rem);
+  line-height: 100%;
+}
+.reservation-number {
+  font-size: clamp(4rem, 20vw, 10rem);
+  line-height: 100%;
+}
+.reservation-subtitle {
+  font-size: clamp(1rem, 10vw, 3rem);
+  line-height: 100%;
 }

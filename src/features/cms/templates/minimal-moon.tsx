@@ -27,7 +27,7 @@ const dancingScript = Dancing_Script({
 
 export default function MinimalMoonTemplate(props: Props) {
   return (
-    <div className={twMerge("max-w-3xl mx-auto whitespace-pre-line", `${oldStandard.variable} ${dancingScript.variable}`)}>
+    <div className={twMerge("max-w-3xl mx-auto whitespace-pre-line overflow-x-hidden", `${oldStandard.variable} ${dancingScript.variable}`)}>
       <BlockRenderer pageStyles={pageStyles} blocks={props?.blocks} />
     </div>
   );

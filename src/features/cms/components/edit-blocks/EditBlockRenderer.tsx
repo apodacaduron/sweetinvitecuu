@@ -8,6 +8,7 @@ import LinkEditBlock from './LinkEditBlock';
 import RowEditBlock from './RowEditBlock';
 import RsvpEditBlock from './RsvpEditBlock';
 import TextEditBlock from './TextEditBlock';
+import TextQueryEditBlock from './TextQueryEditBlock';
 import TimelineEditBlock from './TimelineEditBlock';
 
 type Props = {
@@ -30,6 +31,10 @@ export default function EditBlockRenderer(props: Props) {
           case "text":
             return (
               <TextEditBlock key={idx} {...block} />
+            );
+          case "text-query":
+            return (
+              <TextQueryEditBlock key={idx} {...block} />
             );
           case "link":
             return (

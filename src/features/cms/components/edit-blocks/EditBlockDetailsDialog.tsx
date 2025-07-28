@@ -3,6 +3,7 @@
 import { Loader2Icon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -49,12 +50,18 @@ export default function EditBlockDetailsDialog(props: Props) {
 
   async function onSubmit(data: BlockDetailsSchema) {
     if (!props.item) return;
+    try {
+      updateBlock({
+        ...props.item,
+        ...data,
+        style: JSON.parse(data.style || "{}"),
+      });
 
-    updateBlock({
-      ...props.item,
-      ...data,
-      style: JSON.parse(data.style),
-    });
+      props.onSuccess?.();
+    } catch (error) {
+      toast("Could not update block details");
+      throw error;
+    }
   }
 
   useEffect(() => {
@@ -70,9 +77,7 @@ export default function EditBlockDetailsDialog(props: Props) {
     <Dialog {...props.dialogProps}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Update block details
-          </DialogTitle>
+          <DialogTitle>Update block details</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -139,7 +144,8 @@ export default function EditBlockDetailsDialog(props: Props) {
                   <div className="space-y-0.5">
                     <FormLabel>Mark as original block</FormLabel>
                     <FormDescription>
-                      Protected blocks can’t be deleted from the template, but you can hide them if needed.
+                      Protected blocks can’t be deleted from the template, but
+                      you can hide them if needed.
                     </FormDescription>
                   </div>
                   <FormControl>

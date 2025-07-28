@@ -10,6 +10,7 @@ import CircleOverlayBlock from './overlay-blocks/CircleOverlayBlock';
 import RowBlock from './RowBlock';
 import RsvpBlock from './RsvpBlock';
 import TextBlock from './TextBlock';
+import TextQueryBlock from './TextQueryBlock';
 import TimelineBlock from './TimelineBlock';
 
 type Props = {
@@ -34,6 +35,8 @@ export default function BlockRenderer(props: Props) {
             return <TimelineBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "text":
             return <TextBlock key={idx} {...block} pageStyles={props.pageStyles} />;
+          case "text-query":
+            return <TextQueryBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "gallery":
             return <GalleryBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "rsvp":
