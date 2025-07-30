@@ -43,7 +43,7 @@ export default function CircleOverlayBlock(props: BlockBase<CircleOverlayPropert
   return (
     <div
       ref={overlayRef}
-      className={resolveClassNames(`${props.class} circle-overlay-block ${isZoomed ? 'zoomed' : ''}`, props.pageStyles)}
+      data-aos={props?.animation} className={resolveClassNames(`${props.class} circle-overlay-block ${isZoomed ? 'zoomed' : ''}`, props.pageStyles)}
       onTransitionEnd={onTransitionEnd}
       onClick={handleButtonClick}
     >

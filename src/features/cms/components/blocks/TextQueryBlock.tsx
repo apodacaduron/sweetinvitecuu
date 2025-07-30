@@ -21,7 +21,7 @@ export default function TextQueryBlock(
   return (
     <div
       id={props.id}
-      className={resolveClassNames(props.class, props.pageStyles)}
+      data-aos={props?.animation} className={resolveClassNames(props.class, props.pageStyles)}
       style={props.style}
       data-type={props.type}
     >

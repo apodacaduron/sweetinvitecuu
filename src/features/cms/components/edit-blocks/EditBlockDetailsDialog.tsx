@@ -12,6 +12,9 @@ import {
     Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +28,7 @@ const blockDetailsSchema = z.object({
   tag: z.string().or(z.literal("")),
   original: z.boolean(),
   style: z.string().or(z.literal("")),
+  animation: z.string().or(z.literal("")),
 });
 
 type BlockDetailsSchema = z.infer<typeof blockDetailsSchema>;
@@ -35,6 +39,37 @@ type Props = {
   dialogProps: DialogProps;
 };
 
+const aosAnimations = [
+  "none", // empty for 'None'
+  "fade",
+  "fade-up",
+  "fade-down",
+  "fade-left",
+  "fade-right",
+  "fade-up-right",
+  "fade-up-left",
+  "fade-down-right",
+  "fade-down-left",
+  "flip-up",
+  "flip-down",
+  "flip-left",
+  "flip-right",
+  "slide-up",
+  "slide-down",
+  "slide-left",
+  "slide-right",
+  "zoom-in",
+  "zoom-in-up",
+  "zoom-in-down",
+  "zoom-in-left",
+  "zoom-in-right",
+  "zoom-out",
+  "zoom-out-up",
+  "zoom-out-down",
+  "zoom-out-left",
+  "zoom-out-right",
+];
+
 export default function EditBlockDetailsDialog(props: Props) {
   const { updateBlock } = useEditableBlocks();
 
@@ -44,6 +79,7 @@ export default function EditBlockDetailsDialog(props: Props) {
       class: props.item?.class ?? "",
       original: Boolean(props.item?.original),
       tag: props.item?.tag ?? "",
+      animation: props.item?.animation ?? "",
       style: JSON.stringify(props.item?.style, null, 2) ?? "",
     },
   });
@@ -69,6 +105,7 @@ export default function EditBlockDetailsDialog(props: Props) {
       class: props.item?.class ?? "",
       original: Boolean(props.item?.original),
       tag: props.item?.tag ?? "",
+      animation: props.item?.animation ?? "",
       style: JSON.stringify(props.item?.style, null, 2) ?? "",
     });
   }, [props.item, form]);
@@ -130,6 +167,35 @@ export default function EditBlockDetailsDialog(props: Props) {
                       {...field}
                       className="font-mono min-h-[300px]"
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="animation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Animation</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                      defaultValue={field.value ?? ""}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="None" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {aosAnimations.map((anim) => (
+                          <SelectItem key={anim || "none"} value={anim}>
+                            {anim || "None"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

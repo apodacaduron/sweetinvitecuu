@@ -35,7 +35,7 @@ export default function CountdownBlock(  props: BlockBase<CountdownProperties> &
   }, [props.properties.timestamp]);
 
   return (
-    <div id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
+    <div id={props.id} data-aos={props?.animation} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
       <div>{timeLeft?.days || 0}<br /><span>días</span></div>
       <div>{timeLeft?.hours || 0}<br /><span>horas</span></div>
       <div>{timeLeft?.minutes || 0}<br /><span>minutos</span></div>

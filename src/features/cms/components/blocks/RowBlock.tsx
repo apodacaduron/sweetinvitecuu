@@ -7,7 +7,7 @@ export default function RowBlock(props: BlockBase<RowProperties> & {
     };
   }) {
   return (
-    <div id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
+    <div id={props.id} data-aos={props?.animation} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}>
       <BlockRenderer pageStyles={props.pageStyles} blocks={props.properties.blocks} />
     </div>
   );

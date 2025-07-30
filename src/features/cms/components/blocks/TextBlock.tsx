@@ -10,7 +10,7 @@ export default function TextBlock(
   return (
     <div
       id={props.id}
-      className={resolveClassNames(props.class, props.pageStyles)} style={props.style}
+      data-aos={props?.animation} className={resolveClassNames(props.class, props.pageStyles)} style={props.style}
       data-type={props.type}
     >
       {props.properties.content}

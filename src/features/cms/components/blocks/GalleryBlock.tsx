@@ -16,7 +16,7 @@ export default function GalleryBlock(props: BlockBase<GalleryProperties> & {
   }) {
   return (
       <Swiper
-        id={props.id} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}
+        id={props.id} data-aos={props?.animation} className={resolveClassNames(props.class, props.pageStyles)} style={props.style} data-type={props.type}
         modules={[Navigation, Pagination]}
         loop
         pagination={{ clickable: true }}

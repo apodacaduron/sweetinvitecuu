@@ -59,6 +59,7 @@ export interface BlockBase<T> {
   visible: boolean;
   original: boolean;
   properties: T;
+  animation?: string | null
 }
 
 function buildBlock<K extends keyof BlockDefinition>(
@@ -67,7 +68,7 @@ function buildBlock<K extends keyof BlockDefinition>(
   overrides?: Partial<
     Pick<
       BlockBase<BlockDefinition[K]>,
-      "tag" | "class" | "visible" | "original" | "style"
+      "tag" | "class" | "visible" | "original" | "style" | "animation"
     >
   >
 ): BlockBase<BlockDefinition[K]> & { type: K } {
@@ -80,6 +81,7 @@ function buildBlock<K extends keyof BlockDefinition>(
     visible: overrides?.visible ?? true,
     original: overrides?.original ?? true,
     properties,
+    animation: overrides?.animation ?? null,
   };
 }
 

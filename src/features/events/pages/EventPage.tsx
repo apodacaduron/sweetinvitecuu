@@ -1,5 +1,8 @@
 "use client";
 
+import 'aos/dist/aos.css';
+
+import AOS from 'aos';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import React, { Suspense, useEffect } from 'react';
@@ -21,6 +24,13 @@ export default function EventPage({ params }: Props) {
     // Force light theme
     setTheme("light");
   }, [setTheme]);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800, // duration of animations in ms
+      once: true, // animate only once
+    });
+  }, []);
 
   const eventQuery = useQuery({
     queryKey: ["event", { slug: eventSlug }],
