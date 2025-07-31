@@ -1,6 +1,8 @@
 "use client";
 
 import { Block } from '../../context/BlocksContext';
+import CountdownEditBlock from './CountdownEditBlock';
+import ElegantTitleOverlayEditBlock from './ElegantTitleOverlayEditBlock';
 import GalleryEditBlock from './GalleryEditBlock';
 import GroupEditBlock from './GroupEditBlock';
 import ImageEditBlock from './ImageEditBlock';
@@ -25,35 +27,29 @@ export default function EditBlockRenderer(props: Props) {
           case "image":
             return <ImageEditBlock key={idx} {...block} />;
           case "timeline":
-            return (
-              <TimelineEditBlock key={idx} {...block} />
-            );
+            return <TimelineEditBlock key={idx} {...block} />;
+          case "elegant-title":
+            return <ElegantTitleOverlayEditBlock key={idx} {...block} />;
           case "text":
-            return (
-              <TextEditBlock key={idx} {...block} />
-            );
+            return <TextEditBlock key={idx} {...block} />;
           case "text-query":
-            return (
-              <TextQueryEditBlock key={idx} {...block} />
-            );
+            return <TextQueryEditBlock key={idx} {...block} />;
           case "link":
-            return (
-              <LinkEditBlock key={idx} {...block} />
-            );
+            return <LinkEditBlock key={idx} {...block} />;
           case "gallery":
-            return (
-              <GalleryEditBlock key={idx} {...block} />
-            );
+            return <GalleryEditBlock key={idx} {...block} />;
           case "rsvp":
-            return (
-              <RsvpEditBlock key={idx} {...block} />
-            );
+            return <RsvpEditBlock key={idx} {...block} />;
           case "row":
-            return (
-              <RowEditBlock key={idx} {...block} />
-            );
+            return <RowEditBlock key={idx} {...block} />;
+          case "countdown":
+            return <CountdownEditBlock key={idx} {...block} />;
           default:
-            return <i key={idx}>Edit block <b>{block?.type}</b> not found please contact us.</i>;
+            return (
+              <i key={idx}>
+                Edit block <b>{block?.type}</b> not found please contact us.
+              </i>
+            );
         }
       })}
     </>
