@@ -6,7 +6,8 @@ import GalleryBlock from './GalleryBlock';
 import GroupBlock from './GroupBlock';
 import ImageBlock from './ImageBlock';
 import LinkBlock from './LinkBlock';
-import CircleOverlayBlock from './overlay-blocks/CircleOverlayBlock';
+import ElegantTitleOverlayBlock from './overlay-blocks/ElegantTitleOverlay';
+import GradientTitleOverlayBlock from './overlay-blocks/GradientTitleOverlay';
 import RowBlock from './RowBlock';
 import RsvpBlock from './RsvpBlock';
 import TextBlock from './TextBlock';
@@ -45,8 +46,10 @@ export default function BlockRenderer(props: Props) {
             return <RowBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "link":
             return <LinkBlock key={idx} {...block} pageStyles={props.pageStyles} />;
-          case "circle-overlay":
-            return <CircleOverlayBlock key={idx} {...block} pageStyles={props.pageStyles} />;
+          case "gradient-title":
+            return <GradientTitleOverlayBlock key={idx} {...block} pageStyles={props.pageStyles} />;
+          case "elegant-title":
+            return <ElegantTitleOverlayBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           case "countdown":
             return <CountdownBlock key={idx} {...block} pageStyles={props.pageStyles} />;
           default:

@@ -22,11 +22,6 @@ import {
 
 const rsvpSchema = z.object({
   name: z.string().min(1, { message: "Nombre es requerido" }),
-  phone: z
-    .string()
-    .min(10, { message: "Teléfono debe de contener 10 dígitos" })
-    .regex(/^\d+$/, { message: "Teléfono solo debe de contener números" })
-    .or(z.literal("")),
   will_attend: z.enum(['yes', 'no']),
   people_count: z.string().regex(/^\d+$/, { message: "Debe ser un número" }),
   message: z.string(),
@@ -45,7 +40,6 @@ export default function RsvpBlock(props: BlockBase<RsvpProperties> & {
     resolver: zodResolver(rsvpSchema),
     defaultValues: {
       name: "",
-      phone: "",
       will_attend: "yes",
       people_count: "",
       message: "",
@@ -94,20 +88,6 @@ export default function RsvpBlock(props: BlockBase<RsvpProperties> & {
                 <FormLabel>Nombre</FormLabel>
                 <FormControl>
                   <Input placeholder="Tu nombre" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Teléfono</FormLabel>
-                <FormControl>
-                  <Input type="tel" placeholder="(123) 456 7891" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

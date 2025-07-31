@@ -1,28 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import {
-    BlockBase, CircleOverlayProperties, resolveClassNames, useBlocks
+    BlockBase, GradientTitleOverlayProperties, resolveClassNames, useBlocks
 } from '@/features/cms/context/BlocksContext';
 
-import BlockRenderer from '../BlockRenderer';
-
-export default function CircleOverlayBlock(props: BlockBase<CircleOverlayProperties> & {
+export default function GradientTitleOverlayBlock(props: BlockBase<GradientTitleOverlayProperties> & {
     pageStyles: {
       readonly [key: string]: string;
     };
   }) {
   const { parentData } = useBlocks()
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true);
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-  }, [isZoomed]);
+  }, [hidden]);
 
   // Unlock scroll when zoom animation finishes
   const onTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
-    if (e.propertyName === 'transform' && isZoomed) {
+    if (e.propertyName === 'opacity' && hidden) {
       document.body.style.overflow = ''; // unlock scroll
       setOverlayVisible(false)
     }
@@ -30,7 +28,7 @@ export default function CircleOverlayBlock(props: BlockBase<CircleOverlayPropert
 
   const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsZoomed(true);
+    setHidden(true);
 
     if (parentData?.music_url) {
       const audio = new Audio(parentData?.music_url);
@@ -42,12 +40,13 @@ export default function CircleOverlayBlock(props: BlockBase<CircleOverlayPropert
 
   return (
     <div
-      ref={overlayRef}
-      data-aos={props?.animation} className={resolveClassNames(`${props.class} circle-overlay-block ${isZoomed ? 'zoomed' : ''}`, props.pageStyles)}
+      data-aos={props?.animation} className={resolveClassNames(`${props.class} elegant-title-overlay ${hidden && 'elegant-title-overlay--hidden'}`, props.pageStyles)}
       onTransitionEnd={onTransitionEnd}
       onClick={handleButtonClick}
     >
-      <BlockRenderer pageStyles={props.pageStyles} blocks={props.properties.blocks} />
+      <h1>{props.properties.content}</h1>
+
+      <Button variant='outline'>Abrir invitación</Button>
     </div>
   );
 }

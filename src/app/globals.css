@@ -140,32 +140,91 @@
   color: var(--color-primary) !important;
 }
 
-.circle-overlay-block {
+.gradient-title-overlay {
+  transition: opacity 0.6s ease;
+  opacity: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 2rem;
+
   position: absolute;
-  inset: 0;
-  background: white;
+  top: 0;
+  left: 0;
+  background: #fff;
   height: 100vh;
   width: 100%;
-  --size: 250px;
+}
 
-  mask: radial-gradient(circle var(--size) at center 45%, transparent 0, transparent calc(var(--size)), black calc(var(--size) + 1px));
-  -webkit-mask: radial-gradient(circle var(--size) at center 45%, transparent 0, transparent calc(var(--size)), black calc(var(--size) + 1px));
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
-  transform-origin: center center;
-  transform: scale(1);
-  transition: all 1s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  pointer-events: auto;
+.gradient-title-overlay--hidden {
+  opacity: 0;
+}
+.gradient-title-overlay h1 {
+  background: -webkit-linear-gradient(
+    -45deg,
+    #ee7752,
+    #e73c7e,
+    #23a6d5,
+    #23d5ab
+  );
+  background-size: 400% 400%;
+  animation: gradient 10s ease infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 3rem;
+}
+
+.gradient-title-overlay button {
+  font-size: 1.2rem;
+  padding: 20px 24px;
+}
+
+.elegant-title-overlay {
+  transition: opacity 0.6s ease;
+  opacity: 1;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  overflow: hidden;
-}
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 2rem;
 
-.circle-overlay-block > * {
   position: absolute;
-  bottom: 300px;
+  top: 0;
+  left: 0;
+  background: #000000aa;
+  backdrop-filter: blur(8px);
+  height: 100vh;
+  width: 100%;
 }
 
-.circle-overlay-block.zoomed {
-  transform: scale(4);
+.elegant-title-overlay--hidden {
+  opacity: 0;
+}
+
+.elegant-title-overlay h1 {
+  padding: 3rem;
+  color: #fff;
+}
+
+.elegant-title-overlay button {
+  font-size: 1.2rem;
+  padding: 20px 24px;
 }

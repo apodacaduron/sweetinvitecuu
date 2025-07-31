@@ -38,7 +38,8 @@ export function useBlocks() {
 }
 
 export type BlockType =
-  | "circle-overlay"
+  | "gradient-title"
+  | "elegant-title"
   | "text"
   | "text-query"
   | "group"
@@ -87,7 +88,8 @@ function buildBlock<K extends keyof BlockDefinition>(
 
 export function getBlocksMap(): Record<keyof BlockDefinition, Block> {
   return {
-    "circle-overlay": buildBlock("circle-overlay", { blocks: [] }),
+    "gradient-title": buildBlock("gradient-title", { content: "" }),
+    "elegant-title": buildBlock("elegant-title", { content: "" }),
     text: buildBlock("text", { content: "" }),
     "text-query": buildBlock("text-query", { content: "", query: "" }),
     group: buildBlock("group", { blocks: [] }),
@@ -127,8 +129,8 @@ export type BlockTypeWithIcon = {
 
 export const blockTypesWithIcons: BlockTypeWithIcon[] = [
   {
-    type: "circle-overlay",
-    label: "Circle Overlay",
+    type: "gradient-title",
+    label: "Gradient Title Overlay",
     icon: Circle,
   },
   {
@@ -188,7 +190,8 @@ export type Block = {
 }[keyof BlockDefinition];
 
 type BlockDefinition = {
-  "circle-overlay": CircleOverlayProperties;
+  "gradient-title": GradientTitleOverlayProperties;
+  "elegant-title": ElegantTitleOverlayProperties;
   text: TextProperties;
   "text-query": TextQueryProperties;
   group: GroupProperties;
@@ -218,8 +221,12 @@ export type TextQueryProperties = {
   query?: string;
 };
 
-export type CircleOverlayProperties = {
-  blocks: Block[];
+export type GradientTitleOverlayProperties = {
+  content: string
+};
+
+export type ElegantTitleOverlayProperties = {
+  content: string
 };
 
 export type ImageProperties = {
