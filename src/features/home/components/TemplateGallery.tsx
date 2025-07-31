@@ -60,7 +60,7 @@ import template4 from '@/features/home/assets/template-4.jpg';
               >
                 <div className="relative overflow-hidden">
                   <img 
-                    src={template.image} 
+                    src={template.image.src} 
                     alt={template.title}
                     className="w-full h-48 sm:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
