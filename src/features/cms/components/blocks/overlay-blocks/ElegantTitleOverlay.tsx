@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import {
     BlockBase, ElegantTitleOverlayProperties, resolveClassNames, useBlocks
 } from '@/features/cms/context/BlocksContext';

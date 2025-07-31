@@ -10,7 +10,7 @@ export default function Footer() {
               <span className="text-primary">Sweet</span>Invite
             </h3>
             <p className="text-background/80 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
-              Creating beautiful, personalized digital invitations for life's
+              Creating beautiful, personalized digital invitations for life&apos;s
               most precious moments. From weddings to quinceañeras, we help you
               celebrate in style.
             </p>

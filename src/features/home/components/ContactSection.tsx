@@ -52,7 +52,7 @@ export default function ContactSection() {
             <span className="text-primary">Perfect Invitation</span>?
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Let's bring your vision to life with a stunning, personalized
+            Let&apos;s bring your vision to life with a stunning, personalized
             digital invitation
           </p>
         </div>
@@ -253,7 +253,7 @@ export default function ContactSection() {
                 Quick Response Guarantee
               </h3>
               <p className="text-primary-foreground/80 text-sm sm:text-base">
-                We'll get back to you within 24 hours with a personalized quote
+                We&apos;ll get back to you within 24 hours with a personalized quote
                 and timeline for your invitation.
               </p>
             </div>
