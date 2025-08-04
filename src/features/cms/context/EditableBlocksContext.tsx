@@ -11,7 +11,10 @@ type EditableBlocksContextType = {
   pushBlockById: (
     targetId: string,
     newBlock: Block,
-    mode: "adjacent" | "inside"
+    options?: {
+      mode?: "adjacent" | "inside";
+      position?: "start" | "end";
+    }
   ) => void;
   wrapBlockById: (
     targetId: string,
@@ -59,8 +62,12 @@ export function EditableBlocksProvider(props: Props) {
     blocks: Block[],
     targetId: string,
     newBlock: Block,
-    mode: "adjacent" | "inside" = "adjacent"
+    options?: {
+      mode?: "adjacent" | "inside";
+      position?: "start" | "end";
+    }
   ): Block[] {
+    const { mode = "adjacent", position = "end" } = options || {};
     const result: Block[] = [];
 
     for (const block of blocks) {
@@ -68,19 +75,21 @@ export function EditableBlocksProvider(props: Props) {
 
       if (block.id === targetId) {
         if (mode === "adjacent") {
-          // Insert next to the target block
           result.push(newBlock);
         } else if (
           mode === "inside" &&
           block.properties &&
           "blocks" in block.properties
         ) {
-          // Insert inside target block's children
+          const children = block.properties.blocks ?? [];
           const updatedBlock = {
             ...block,
             properties: {
               ...block.properties,
-              blocks: [...block.properties.blocks, newBlock],
+              blocks:
+                position === "start"
+                  ? [newBlock, ...children]
+                  : [...children, newBlock],
             },
           };
           // Replace the last pushed block with the updated one
@@ -88,13 +97,11 @@ export function EditableBlocksProvider(props: Props) {
           result[result.length - 1] = updatedBlock;
         }
       } else if (block.properties && "blocks" in block.properties) {
-        // Recurse in nested blocks regardless of mode,
-        // because target might be nested deeper
         const nestedBlocks = pushBlockToTarget(
           block.properties.blocks,
           targetId,
           newBlock,
-          mode
+          options
         );
 
         if (nestedBlocks !== block.properties.blocks) {
@@ -187,10 +194,13 @@ export function EditableBlocksProvider(props: Props) {
   const pushBlockById = (
     targetId: string,
     newBlock: Block,
-    mode: "adjacent" | "inside" = "adjacent"
+    options?: {
+      mode?: "adjacent" | "inside";
+      position?: "start" | "end";
+    }
   ) => {
     props.setEditableBlocks((prevBlocks) =>
-      pushBlockToTarget(prevBlocks, targetId, newBlock, mode)
+      pushBlockToTarget(prevBlocks, targetId, newBlock, options)
     );
   };
 

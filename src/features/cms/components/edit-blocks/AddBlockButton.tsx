@@ -21,7 +21,7 @@ export default function AddBlockButton(props: Props) {
     newBlock.original = false;
 
     if (props.adjacentBlockId) {
-        pushBlockById(props.adjacentBlockId, newBlock, props.mode);
+        pushBlockById(props.adjacentBlockId, newBlock, { mode: props.mode });
     } else {
         pushBlock(newBlock)
     }

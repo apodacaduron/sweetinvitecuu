@@ -29,6 +29,10 @@
   gap: 16px;
 }
 
+.itinerario {
+  font-size: clamp(2.5rem, 13vw, 4rem);
+}
+
 .we-invite-you {
   font-size: clamp(0.89rem, -0.1643rem + 4.6857vw, 1.3rem);
 }
@@ -94,7 +98,13 @@
 .reception {
   font-size: clamp(1rem, 8vw, 2.5rem);
   line-height: 100%;
-  margin-bottom: 32;
+  margin-bottom: 96px;
+}
+
+.church a,
+.reception a {
+  font-size: clamp(1rem, 8vw, 1.5rem);
+  padding: 24px 24px;
 }
 
 .church-img,
@@ -115,7 +125,6 @@
 }
 
 .timeline {
-  margin-top: 64px;
   margin-bottom: 64px;
   font-size: clamp(1rem, 5vw, 1.5rem);
   line-height: 100%;

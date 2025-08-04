@@ -43,9 +43,9 @@ export default function ElegantTitleOverlayBlock(props: BlockBase<ElegantTitleOv
       onTransitionEnd={onTransitionEnd}
       onClick={handleButtonClick}
     >
+      <img src="/assets/81cd8490-7ca7-4a46-b0fe-4e3b710f09dd.svg" className='w-full max-w-3xs' />
       <h1>{props.properties.content}</h1>
-
-      <img src="/assets/abrir-invitacion-ornamental.png" className='w-full max-w-3xs' />
+      <img src="/assets/0c09f3d3-2254-4b5a-83f6-4af202c30310.svg" className='w-full max-w-3xs' />
     </div>
   );
 }

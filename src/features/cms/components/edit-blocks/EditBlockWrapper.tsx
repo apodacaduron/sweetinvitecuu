@@ -1,18 +1,19 @@
 import Case from 'case';
 import {
     CalendarIcon, Columns, Eye, EyeClosed, FileTextIcon, GridIcon, ImageIcon, LayersIcon, Link2Icon,
-    MapPinIcon, Pencil, Rows, Trash, UserCheckIcon
+    MapPinIcon, Pencil, Plus, Rows, Trash, UserCheckIcon
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub,
+    DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { IconDotsVertical } from '@tabler/icons-react';
 
-import { Block, getBlocksMap } from '../../context/BlocksContext';
+import { Block, BlockType, blockTypesWithIcons, getBlocksMap } from '../../context/BlocksContext';
 import { useEditableBlocks } from '../../context/EditableBlocksContext';
 import AddBlockButton from './AddBlockButton';
 import EditBlockDetailsDialog from './EditBlockDetailsDialog';
@@ -56,8 +57,19 @@ function BlockIcon({ type }: { type: string }) {
 }
 
 export function EditBlockWrapper(props: Props) {
-  const { deleteBlockById, wrapBlockById } = useEditableBlocks();
+  const { deleteBlockById, wrapBlockById, pushBlockById, pushBlock } = useEditableBlocks();
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
+  function addNewBlock(blockType: BlockType) {
+    const newBlock = getBlocksMap()[blockType];
+    newBlock.original = false;
+
+    if (props.block?.id) {
+      pushBlockById(props.block.id, newBlock, { mode: 'inside', position: 'start' });
+    } else {
+      pushBlock(newBlock);
+    }
+  }
 
   return (
     <div className={twMerge("relative space-y-4", props.className)}>
@@ -100,10 +112,32 @@ export function EditBlockWrapper(props: Props) {
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+
+        <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={() => setDetailsDialogOpen(true)}>
-            <Pencil /> Edit block details
+            <Pencil className="mr-2 h-4 w-4" /> Edit block details
           </DropdownMenuItem>
+
+          {/* --- Submenu for Inserting New Blocks --- */}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Plus className="mr-2 h-4 w-4" /> Insert New Block
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="w-48">
+              {blockTypesWithIcons.map((block) => (
+                <DropdownMenuItem
+                  key={block.type}
+                  onClick={() => addNewBlock(block.type)}
+                >
+                  <block.icon className="mr-2 h-4 w-4" />
+                  {block.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
             onClick={() =>
               wrapBlockById(props.block.id, (child) => {
@@ -121,8 +155,9 @@ export function EditBlockWrapper(props: Props) {
               })
             }
           >
-            <Rows /> Wrap in Group
+            <Rows className="mr-2 h-4 w-4" /> Wrap in Group
           </DropdownMenuItem>
+
           <DropdownMenuItem
             onClick={() =>
               wrapBlockById(props.block.id, (child) => {
@@ -140,27 +175,31 @@ export function EditBlockWrapper(props: Props) {
               })
             }
           >
-            <Columns /> Wrap in Row
+            <Columns className="mr-2 h-4 w-4" /> Wrap in Row
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
             onClick={() => props.onClickVisibility(!props.block.visible)}
           >
             {props.block.visible ? (
               <>
-                <EyeClosed /> Hide
+                <EyeClosed className="mr-2 h-4 w-4" /> Hide
               </>
             ) : (
               <>
-                <Eye /> Show
+                <Eye className="mr-2 h-4 w-4" /> Show
               </>
             )}
           </DropdownMenuItem>
+
           {!props.block.original && (
             <DropdownMenuItem
               onClick={() => deleteBlockById(props.block.id)}
-              variant="destructive"
+              className="text-red-600 focus:text-red-600"
             >
-              <Trash /> Delete
+              <Trash className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
