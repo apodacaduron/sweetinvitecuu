@@ -1,9 +1,6 @@
-:root {
-  --brown: #7A5A3A;
-  --gold: #C4934E;
-}
-
 .wrapper {
+  --brown: #7a5a3a;
+
   background-image: url("https://lwotpjzdnsbqfetmucxp.supabase.co/storage/v1/object/public/assets/backgrounds/yellow-watercolor.jpg");
   background-size: cover;
   font-family: var(--font-fredoka);
@@ -40,12 +37,16 @@
   margin-bottom: -4px;
 }
 .el-primer-cumpleanos {
+  --gold: #c4934e;
+
   font-family: var(--font-dancing-script);
   color: var(--gold);
   font-size: clamp(2rem, 8vw, 4rem);
   line-height: 100%;
 }
 .de-sebastian {
+  --gold: #c4934e;
+
   font-family: var(--font-dancing-script);
   color: var(--gold);
   font-size: clamp(3.2rem, 9vw, 5rem);
@@ -55,4 +56,5 @@
 .fecha {
   margin-bottom: 16px;
 }
-.direccion {}
+.direccion {
+}
