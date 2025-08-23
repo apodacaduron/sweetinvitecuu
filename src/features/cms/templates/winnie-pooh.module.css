@@ -1,0 +1,58 @@
+:root {
+  --brown: #7A5A3A;
+  --gold: #C4934E;
+}
+
+.wrapper {
+  background-image: url("https://lwotpjzdnsbqfetmucxp.supabase.co/storage/v1/object/public/assets/backgrounds/yellow-watercolor.jpg");
+  background-size: cover;
+  font-family: var(--font-fredoka);
+  text-align: center;
+  color: var(--brown);
+}
+
+.hero-section {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.estamos-de-fiesta {
+  margin-bottom: -32px;
+  font-family: var(--font-dancing-script);
+  font-size: clamp(2rem, 10vw, 4rem);
+}
+
+.pooh {
+  --hero-img-max-size: 400px;
+  --hero-img-min-size: 200px;
+  max-width: var(--hero-img-max-size);
+  max-height: var(--hero-img-max-size);
+  min-width: var(--hero-img-min-size);
+  min-height: var(--hero-img-min-size);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.acompananos-a-celebrar {
+  margin-bottom: -4px;
+}
+.el-primer-cumpleanos {
+  font-family: var(--font-dancing-script);
+  color: var(--gold);
+  font-size: clamp(2rem, 8vw, 4rem);
+  line-height: 100%;
+}
+.de-sebastian {
+  font-family: var(--font-dancing-script);
+  color: var(--gold);
+  font-size: clamp(3.2rem, 9vw, 5rem);
+  line-height: 100%;
+  margin-bottom: 32px;
+}
+.fecha {
+  margin-bottom: 16px;
+}
+.direccion {}
